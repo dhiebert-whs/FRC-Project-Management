@@ -5,7 +5,9 @@ from django.utils import timezone
 from core.models import Project, Task, Subsystem, TeamMember, Subteam, Component, Milestone, Meeting, Attendance
 import json
 import tempfile
+import os
 from datetime import timedelta
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 class ProjectPersistenceTests(TestCase):
     def setUp(self):
@@ -143,89 +145,19 @@ class ProjectPersistenceTests(TestCase):
         project_id = self.project.id
         self.project.delete()
         
-        # Create a temporary file with the project JSON
-        temp_file = tempfile.NamedTemporaryFile(suffix='.json')
-        temp_file.write(project_json)
-        temp_file.seek(0)
-        
-        # Import the project without renaming duplicates
-        import_url = reverse('core:project_load')
-        with open(temp_file.name, 'rb') as f:
-            import_response = self.client.post(import_url, {
-                'project_file': f,
-                'rename_duplicates': False
-            })
-        
-        # Check that we get a 200 status (error page)
-        self.assertEqual(import_response.status_code, 200)
-        
-        # Clean up
-        temp_file.close()
-
-    def test_invalid_json_handling(self):
-        """Test handling of invalid JSON during import"""
-        # Create a temporary file with invalid JSON
-        temp_file = tempfile.NamedTemporaryFile(suffix='.json')
-        temp_file.write(b'{"this is not valid JSON": ')
-        temp_file.seek(0)
+        # Create an uploaded file from the JSON data
+        uploaded_file = SimpleUploadedFile(
+            name="test_project.json",
+            content=project_json,
+            content_type="application/json"
+        )
         
         # Import the project
-        import_url = reverse('core:project_load')
-        with open(temp_file.name, 'rb') as f:
-            import_response = self.client.post(import_url, {
-                'project_file': f,
-                'rename_duplicates': 'on'
-            })
-        
-        # Should render the error page
-        self.assertEqual(import_response.status_code, 200)
-        self.assertTemplateUsed(import_response, 'core/import_error.html')
-        
-        # Clean up
-        temp_file.close()
-        
-    def test_empty_file_handling(self):
-        """Test handling of empty files during import"""
-        # Create an empty temporary file
-        temp_file = tempfile.NamedTemporaryFile(suffix='.json')
-        temp_file.write(b'')
-        temp_file.seek(0)
-        
-        # Import the project
-        import_url = reverse('core:project_load')
-        with open(temp_file.name, 'rb') as f:
-            import_response = self.client.post(import_url, {
-                'project_file': f,
-                'rename_duplicates': 'on'
-            })
-        
-        # Should render the error page
-        self.assertEqual(import_response.status_code, 200)
-        self.assertTemplateUsed(import_response, 'core/import_error.html')
-        
-        # Clean up
-        temp_file.close()
-        
-    def test_missing_file_handling(self):
-        """Test handling when no file is provided"""
-        # Import without a file
         import_url = reverse('core:project_load')
         import_response = self.client.post(import_url, {
+            'project_file': uploaded_file,
             'rename_duplicates': 'on'
         })
-        
-        # Should return to the import page with an error
-        self.assertEqual(import_response.status_code, 200)
-        self.assertTemplateUsed(import_response, 'core/project_load.html')(project_json)
-        temp_file.seek(0)
-        
-        # Import the project
-        import_url = reverse('core:project_load')
-        with open(temp_file.name, 'rb') as f:
-            import_response = self.client.post(import_url, {
-                'project_file': f,
-                'rename_duplicates': 'on'
-            })
         
         # Check redirection
         self.assertEqual(import_response.status_code, 302)
@@ -245,9 +177,6 @@ class ProjectPersistenceTests(TestCase):
         task = Task.objects.get(project=new_project)
         self.assertEqual(task.title, 'Test Task')
         self.assertEqual(task.progress, 50)
-        
-        # Clean up
-        temp_file.close()
 
     def test_duplicate_project_name_handling(self):
         """Test handling of duplicate project names during import"""
@@ -265,18 +194,19 @@ class ProjectPersistenceTests(TestCase):
         export_response = self.client.get(export_url)
         project_json = export_response.content
         
-        # Create a temporary file with the project JSON
-        temp_file = tempfile.NamedTemporaryFile(suffix='.json')
-        temp_file.write(project_json)
-        temp_file.seek(0)
+        # Create an uploaded file from the JSON data
+        uploaded_file = SimpleUploadedFile(
+            name="test_project.json",
+            content=project_json,
+            content_type="application/json"
+        )
         
         # Import the project with rename_duplicates=True
         import_url = reverse('core:project_load')
-        with open(temp_file.name, 'rb') as f:
-            import_response = self.client.post(import_url, {
-                'project_file': f,
-                'rename_duplicates': 'on'
-            })
+        import_response = self.client.post(import_url, {
+            'project_file': uploaded_file,
+            'rename_duplicates': 'on'
+        })
         
         # Check redirection
         self.assertEqual(import_response.status_code, 302)
@@ -285,9 +215,78 @@ class ProjectPersistenceTests(TestCase):
         projects = Project.objects.filter(name__startswith='Test Project (Import')
         self.assertTrue(projects.exists())
         
-        # Clean up
-        temp_file.close()
-        
         # Test with rename_duplicates=False - This should fail gracefully
-        temp_file = tempfile.NamedTemporaryFile(suffix='.json')
-        temp_file.write
+        uploaded_file = SimpleUploadedFile(
+            name="test_project.json",
+            content=project_json,
+            content_type="application/json"
+        )
+        
+        # Import the project without renaming duplicates
+        import_url = reverse('core:project_load')
+        import_response = self.client.post(import_url, {
+            'project_file': uploaded_file,
+            'rename_duplicates': False
+        })
+        
+        # Check that we get a 200 status (error page)
+        self.assertEqual(import_response.status_code, 200)
+        self.assertTemplateUsed(import_response, 'core/import_error.html')
+
+    def test_invalid_json_handling(self):
+        """Test handling of invalid JSON during import"""
+        # Create invalid JSON data
+        invalid_json = b'{"this is not valid JSON": '
+        
+        # Create an uploaded file with invalid JSON
+        uploaded_file = SimpleUploadedFile(
+            name="invalid.json",
+            content=invalid_json,
+            content_type="application/json"
+        )
+        
+        # Import the project
+        import_url = reverse('core:project_load')
+        import_response = self.client.post(import_url, {
+            'project_file': uploaded_file,
+            'rename_duplicates': 'on'
+        })
+        
+        # Should render the error page
+        self.assertEqual(import_response.status_code, 200)
+        self.assertTemplateUsed(import_response, 'core/import_error.html')
+        
+    def test_empty_file_handling(self):
+        """Test handling of empty files during import"""
+        # Create an empty file
+        empty_json = b''
+        
+        # Create an uploaded file that's empty
+        uploaded_file = SimpleUploadedFile(
+            name="empty.json",
+            content=empty_json,
+            content_type="application/json"
+        )
+        
+        # Import the project
+        import_url = reverse('core:project_load')
+        import_response = self.client.post(import_url, {
+            'project_file': uploaded_file,
+            'rename_duplicates': 'on'
+        })
+        
+        # Should render the error page
+        self.assertEqual(import_response.status_code, 200)
+        self.assertTemplateUsed(import_response, 'core/import_error.html')
+        
+    def test_missing_file_handling(self):
+        """Test handling when no file is provided"""
+        # Import without a file
+        import_url = reverse('core:project_load')
+        import_response = self.client.post(import_url, {
+            'rename_duplicates': 'on'
+        })
+        
+        # Should return to the import page with an error
+        self.assertEqual(import_response.status_code, 200)
+        self.assertTemplateUsed(import_response, 'core/project_load.html')
