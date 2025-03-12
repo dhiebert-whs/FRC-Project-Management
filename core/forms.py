@@ -93,3 +93,16 @@ class TaskForm(forms.ModelForm):
         )
         
         return cleaned_data
+    
+class TeamMemberForm(forms.ModelForm):
+    class Meta:
+        model = TeamMember
+        fields = ['user', 'subteam', 'phone', 'skills', 'is_leader']
+        widgets = {
+            'skills': forms.Textarea(attrs={'rows': 3}),
+        }
+        help_texts = {
+            'skills': 'Enter comma-separated skills of this team member',
+            'is_leader': 'Check if this member is a subteam leader'
+        }
+

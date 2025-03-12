@@ -425,4 +425,44 @@ def attendance_record(request, project_id, meeting_id):
     messages.info(request, 'Attendance recording functionality coming soon.')
     return redirect('core:meeting_detail', project_id=project.id, meeting_id=meeting.id)
 
+#members
+@login_required
+def member_list(request):
+    members = TeamMember.objects.all().select_related('user', 'subteam')
+    return render(request, 'core/member_list.html', {'members': members})
+
+@login_required
+def member_create(request):
+    if request.method == 'POST':
+        form = TeamMemberForm(request.POST)
+        if form.is_valid():
+            member = form.save()
+            messages.success(request, f'Team member "{member}" was created successfully!')
+            return redirect('core:member_detail', member_id=member.id)
+    else:
+        form = TeamMemberForm()
+    
+    return render(request, 'core/member_form.html', {'form': form, 'title': 'Add Team Member'})
+
+@login_required
+def member_detail(request, member_id):
+    member = get_object_or_404(TeamMember, id=member_id)
+    return render(request, 'core/member_detail.html', {'member': member})
+
+@login_required
+def member_edit(request, member_id):
+    member = get_object_or_404(TeamMember, id=member_id)
+    
+    if request.method == 'POST':
+        form = TeamMemberForm(request.POST, instance=member)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Team member "{member}" was updated successfully!')
+            return redirect('core:member_detail', member_id=member.id)
+    else:
+        form = TeamMemberForm(instance=member)
+    
+    return render(request, 'core/member_form.html', {'form': form, 'member': member, 'title': 'Edit Team Member'})
+
+
 

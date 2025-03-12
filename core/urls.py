@@ -29,6 +29,12 @@ urlpatterns = [
     path('teams/new/', views.subteam_create, name='subteam_create'),
     path('teams/<int:subteam_id>/', views.subteam_detail, name='subteam_detail'),
     path('teams/<int:subteam_id>/edit/', views.subteam_edit, name='subteam_edit'),
+    path('members/', views.member_list, name='member_list'),
+
+    # Member management
+    path('members/new/', views.member_create, name='member_create'),
+    path('members/<int:member_id>/', views.member_detail, name='member_detail'),
+    path('members/<int:member_id>/edit/', views.member_edit, name='member_edit'),
     
     # Task management
     path('projects/<int:project_id>/tasks/', views.task_list, name='task_list'),
