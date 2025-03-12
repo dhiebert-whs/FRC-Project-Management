@@ -7,6 +7,10 @@ from django.http import HttpResponse
 from .models import Subteam, Task, Meeting, Attendance, TeamMember
 from django.utils import timezone
 
+import json
+from django.utils.timedelta import duration_string
+from datetime import timedelta
+
 # Dashboard
 @login_required
 def dashboard(request):
@@ -84,7 +88,69 @@ def project_load(request):
 @login_required
 def gantt_chart(request, project_id):
     project = get_object_or_404(Project, id=project_id)
-    return render(request, 'core/gantt_chart.html', {'project': project})
+    tasks = Task.objects.filter(project=project).select_related('subsystem')
+    
+    # Calculate overall project progress
+    if tasks.exists():
+        completed_tasks = tasks.filter(completed=True).count()
+        overall_progress = int((completed_tasks / tasks.count()) * 100)
+    else:
+        overall_progress = 0
+    
+    # Count tasks by priority
+    priority_counts = {}
+    for priority_id, _ in Task.PRIORITY_CHOICES:
+        priority_counts[priority_id] = tasks.filter(priority=priority_id).count()
+    
+    # Get milestone information
+    milestones = project.milestones.all()
+    total_milestones = milestones.count()
+    completed_milestones = milestones.filter(date__lte=timezone.now().date()).count()
+    
+    # Prepare task data for JavaScript
+    tasks_json = []
+    for task in tasks:
+        # Get subsystem and subteam information
+        subsystem_name = task.subsystem.name if task.subsystem else "Unassigned"
+        subteam_name = task.subsystem.responsible_subteam.name if task.subsystem and task.subsystem.responsible_subteam else "Unassigned"
+        
+        # Get assigned members
+        assigned_members = [member.user.get_full_name() or member.user.username for member in task.assigned_to.all()]
+        
+        # Calculate estimated duration in days
+        est_duration_days = task.estimated_duration.days
+        if task.estimated_duration.seconds > 0:
+            est_duration_days += 1
+        
+        task_data = {
+            'id': task.id,
+            'title': task.title,
+            'progress': task.progress,
+            'priority': task.priority,
+            'project_id': project.id,
+            'subsystem_name': subsystem_name,
+            'subteam_name': subteam_name,
+            'assigned_members': assigned_members,
+            'start_date': task.start_date.isoformat() if task.start_date else project.start_date.isoformat(),
+            'end_date': task.end_date.isoformat() if task.end_date else None,
+            'estimated_duration_days': est_duration_days,
+            'completed': task.completed,
+        }
+        tasks_json.append(task_data)
+    
+    context = {
+        'project': project,
+        'tasks_json': json.dumps(tasks_json),
+        'overall_progress': overall_progress,
+        'completed_tasks': completed_tasks,
+        'in_progress_tasks': tasks.count() - completed_tasks,
+        'priority_counts': priority_counts,
+        'total_milestones': total_milestones,
+        'completed_milestones': completed_milestones,
+    }
+    
+    return render(request, 'core/gantt_chart.html', context)
+
 
 @login_required
 def gantt_export(request, project_id):
