@@ -126,10 +126,11 @@ def project_save(request, project_id):
     # Handle many-to-many relationships for tasks
     task_relations = {}
     for task in tasks:
-        task_relations[task.id] = {
-            'pre_dependencies': [dep.id for dep in task.pre_dependencies.all()],
-            'required_components': [comp.id for comp in task.required_components.all()],
-            'assigned_to': [member.id for member in task.assigned_to.all()]
+        # Convert all IDs to strings for JSON consistency
+        task_relations[str(task.id)] = {
+            'pre_dependencies': [str(dep.id) for dep in task.pre_dependencies.all()],
+            'required_components': [str(comp.id) for comp in task.required_components.all()],
+            'assigned_to': [str(member.id) for member in task.assigned_to.all()]
         }
     project_data['task_relations'] = task_relations
     
@@ -153,15 +154,36 @@ def project_load(request):
     """
     Import a project from a JSON file
     """
-    if request.method == 'POST' and request.FILES.get('project_file'):
+    if request.method == 'POST':
+        if not request.FILES.get('project_file'):
+            messages.error(request, 'No file was uploaded. Please select a file to import.')
+            return render(request, 'core/project_load.html')
+            
         try:
             project_file = request.FILES['project_file']
-            project_data = json.loads(project_file.read().decode('utf-8'))
+            
+            # Check if file is empty
+            if project_file.size == 0:
+                return render(request, 'core/import_error.html', {
+                    'error_message': 'The uploaded file is empty.',
+                    'technical_details': 'File has zero bytes.'
+                })
+                
+            # Read and parse JSON
+            try:
+                project_data = json.loads(project_file.read().decode('utf-8'))
+            except json.JSONDecodeError as e:
+                return render(request, 'core/import_error.html', {
+                    'error_message': 'Invalid JSON format. The file may be corrupted or not a proper JSON file.',
+                    'technical_details': str(e)
+                })
             
             # Validate the format
             if 'format_version' not in project_data or 'project' not in project_data:
-                messages.error(request, 'Invalid project file format. The file may be corrupted or not a valid project export.')
-                return redirect('core:project_list')
+                return render(request, 'core/import_error.html', {
+                    'error_message': 'Invalid project file format. The file may be corrupted or not a valid project export.',
+                    'technical_details': 'Missing required format_version or project data.'
+                })
             
             rename_duplicates = request.POST.get('rename_duplicates', False) == 'on'
             
@@ -172,7 +194,13 @@ def project_load(request):
                 
                 # Check for duplicate project name
                 project_name = project_fields['name']
-                if Project.objects.filter(name=project_name).exists() and rename_duplicates:
+                if Project.objects.filter(name=project_name).exists():
+                    if not rename_duplicates:
+                        return render(request, 'core/import_error.html', {
+                            'error_message': f'A project with the name "{project_name}" already exists.',
+                            'technical_details': 'Set the "rename duplicates" option to automatically rename the imported project.'
+                        })
+                    
                     original_name = project_name
                     counter = 1
                     while Project.objects.filter(name=project_name).exists():
@@ -296,6 +324,19 @@ def project_load(request):
                         date=milestone_fields['date']
                     )
                 
+                # Import meetings
+                meeting_map = {}
+                for meeting_import in project_data.get('meetings', []):
+                    meeting_fields = meeting_import['fields']
+                    new_meeting = Meeting.objects.create(
+                        project=new_project,
+                        date=meeting_fields['date'],
+                        start_time=meeting_fields['start_time'],
+                        end_time=meeting_fields['end_time'],
+                        notes=meeting_fields.get('notes', '')
+                    )
+                    meeting_map[meeting_import['pk']] = new_meeting.id
+                
                 # Import tasks
                 for task_import in project_data.get('tasks', []):
                     task_fields = task_import['fields']
@@ -306,13 +347,67 @@ def project_load(request):
                         # Skip task if subsystem is missing
                         continue
                     
+                    # Handle duration fields - convert strings to timedelta objects
+                    estimated_duration = None
+                    if 'estimated_duration' in task_fields:
+                        if isinstance(task_fields['estimated_duration'], str):
+                            # Parse the duration string like "3 00:30:00" (3 days, 30 minutes)
+                            duration_parts = task_fields['estimated_duration'].split()
+                            if len(duration_parts) == 2:
+                                days = int(duration_parts[0])
+                                time_parts = duration_parts[1].split(':')
+                                hours = int(time_parts[0])
+                                minutes = int(time_parts[1])
+                                seconds = int(time_parts[2]) if len(time_parts) > 2 else 0
+                                
+                                estimated_duration = datetime.timedelta(
+                                    days=days,
+                                    hours=hours,
+                                    minutes=minutes,
+                                    seconds=seconds
+                                )
+                            else:
+                                # Default to 1 hour if the format is unrecognized
+                                estimated_duration = datetime.timedelta(hours=1)
+                        else:
+                            # If it's already a timedelta or another valid format, try to use it
+                            try:
+                                estimated_duration = datetime.timedelta(seconds=float(task_fields['estimated_duration']))
+                            except (ValueError, TypeError):
+                                estimated_duration = datetime.timedelta(hours=1)
+                    else:
+                        estimated_duration = datetime.timedelta(hours=1)
+                    
+                    # Handle actual_duration in the same way
+                    actual_duration = None
+                    if task_fields.get('actual_duration'):
+                        if isinstance(task_fields['actual_duration'], str):
+                            # Try to parse the duration string
+                            try:
+                                duration_parts = task_fields['actual_duration'].split()
+                                if len(duration_parts) == 2:
+                                    days = int(duration_parts[0])
+                                    time_parts = duration_parts[1].split(':')
+                                    hours = int(time_parts[0])
+                                    minutes = int(time_parts[1])
+                                    seconds = int(time_parts[2]) if len(time_parts) > 2 else 0
+                                    
+                                    actual_duration = datetime.timedelta(
+                                        days=days,
+                                        hours=hours,
+                                        minutes=minutes,
+                                        seconds=seconds
+                                    )
+                            except (ValueError, IndexError):
+                                actual_duration = None
+                    
                     # Create task
                     new_task = Task.objects.create(
                         project=new_project,
                         title=task_fields['title'],
                         description=task_fields.get('description', ''),
-                        estimated_duration=task_fields['estimated_duration'],
-                        actual_duration=task_fields.get('actual_duration'),
+                        estimated_duration=estimated_duration,
+                        actual_duration=actual_duration,
                         priority=task_fields.get('priority', 2),
                         progress=task_fields.get('progress', 0),
                         start_date=task_fields.get('start_date'),
@@ -324,11 +419,12 @@ def project_load(request):
                 
                 # Add task relations
                 task_relations = project_data.get('task_relations', {})
-                for old_task_id, relations in task_relations.items():
+                for old_task_id_str, relations in task_relations.items():
+                    old_task_id = int(old_task_id_str)
                     if old_task_id not in task_map:
                         continue
                     
-                    task = Task.objects.get(id=task_map[int(old_task_id)])
+                    task = Task.objects.get(id=task_map[old_task_id])
                     
                     # Add pre_dependencies
                     for dep_id in relations.get('pre_dependencies', []):
@@ -345,17 +441,28 @@ def project_load(request):
                         if member_id in member_map:
                             task.assigned_to.add(TeamMember.objects.get(id=member_map[member_id]))
                 
-                # Import meetings and attendance records can be implemented similarly
-                # but are omitted here for brevity
+                # Import attendance records
+                for attendance_import in project_data.get('attendance', []):
+                    attendance_fields = attendance_import['fields']
+                    
+                    # Map meeting and member
+                    meeting_id = meeting_map.get(attendance_fields['meeting'])
+                    member_id = member_map.get(attendance_fields['member'])
+                    
+                    if not meeting_id or not member_id:
+                        continue
+                    
+                    Attendance.objects.create(
+                        meeting_id=meeting_id,
+                        member_id=member_id,
+                        present=attendance_fields.get('present', False),
+                        arrival_time=attendance_fields.get('arrival_time'),
+                        departure_time=attendance_fields.get('departure_time')
+                    )
             
             messages.success(request, f'Project "{new_project.name}" imported successfully!')
             return redirect('core:project_detail', project_id=new_project.id)
             
-        except json.JSONDecodeError as e:
-            return render(request, 'core/import_error.html', {
-                'error_message': 'Invalid JSON format. The file may be corrupted.',
-                'technical_details': str(e)
-            })
         except Exception as e:
             return render(request, 'core/import_error.html', {
                 'error_message': f'Error importing project: {str(e)}',
