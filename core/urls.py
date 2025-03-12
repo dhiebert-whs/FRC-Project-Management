@@ -1,76 +1,42 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
-from .models import Project, Subteam, Task, Meeting, Attendance
+from django.urls import path
+from . import views
 
-# Dashboard
-@login_required
-def dashboard(request):
-    projects = Project.objects.all()
-    return render(request, 'core/dashboard.html', {'projects': projects})
+app_name = 'core'  # For namespacing
 
-# Project views
-@login_required
-def project_list(request):
-    projects = Project.objects.all()
-    return render(request, 'core/project_list.html', {'projects': projects})
-
-@login_required
-def project_create(request):
-    # TODO: Implement project creation form
-    return render(request, 'core/project_form.html')
-
-@login_required
-def project_detail(request, project_id):
-    project = get_object_or_404(Project, id=project_id)
-    return render(request, 'core/project_detail.html', {'project': project})
-
-@login_required
-def project_edit(request, project_id):
-    project = get_object_or_404(Project, id=project_id)
-    # TODO: Implement project edit form
-    return render(request, 'core/project_form.html', {'project': project})
-
-@login_required
-def project_delete(request, project_id):
-    project = get_object_or_404(Project, id=project_id)
-    # TODO: Implement deletion with confirmation
-    return redirect('core:project_list')
-
-# Project file management
-@login_required
-def project_save(request, project_id):
-    project = get_object_or_404(Project, id=project_id)
-    # TODO: Implement project saving to file
-    return HttpResponse("Project saved")
-
-@login_required
-def project_load(request):
-    # TODO: Implement project loading from file
-    return render(request, 'core/project_load.html')
-
-# Visualization views
-@login_required
-def gantt_chart(request, project_id):
-    project = get_object_or_404(Project, id=project_id)
-    return render(request, 'core/gantt_chart.html', {'project': project})
-
-@login_required
-def gantt_export(request, project_id):
-    project = get_object_or_404(Project, id=project_id)
-    # TODO: Implement SVG export
-    return HttpResponse("SVG export of Gantt chart")
-
-@login_required
-def daily_view(request, project_id, date):
-    project = get_object_or_404(Project, id=project_id)
-    # TODO: Parse date and show daily view
-    return render(request, 'core/daily_view.html', {'project': project, 'date': date})
-
-@login_required
-def daily_export(request, project_id, date):
-    # TODO: Implement daily view SVG export
-    return HttpResponse("SVG export of daily view")
-
-# Placeholder views for other endpoints
-# (Implement similar placeholder functions for subteam, task, and meeting related views)
+urlpatterns = [
+    # Dashboard
+    path('', views.dashboard, name='dashboard'),
+    
+    # Project management
+    path('projects/', views.project_list, name='project_list'),
+    path('projects/new/', views.project_create, name='project_create'),
+    path('projects/<int:project_id>/', views.project_detail, name='project_detail'),
+    path('projects/<int:project_id>/edit/', views.project_edit, name='project_edit'),
+    path('projects/<int:project_id>/delete/', views.project_delete, name='project_delete'),
+    path('projects/<int:project_id>/save/', views.project_save, name='project_save'),
+    path('projects/load/', views.project_load, name='project_load'),
+    
+    # Gantt chart and visualization
+    path('projects/<int:project_id>/gantt/', views.gantt_chart, name='gantt_chart'),
+    path('projects/<int:project_id>/gantt/export/', views.gantt_export, name='gantt_export'),
+    path('projects/<int:project_id>/daily/<str:date>/', views.daily_view, name='daily_view'),
+    path('projects/<int:project_id>/daily/<str:date>/export/', views.daily_export, name='daily_export'),
+    
+    # Team management
+    path('teams/', views.subteam_list, name='subteam_list'),
+    path('teams/new/', views.subteam_create, name='subteam_create'),
+    path('teams/<int:subteam_id>/', views.subteam_detail, name='subteam_detail'),
+    path('teams/<int:subteam_id>/edit/', views.subteam_edit, name='subteam_edit'),
+    
+    # Task management
+    path('projects/<int:project_id>/tasks/', views.task_list, name='task_list'),
+    path('projects/<int:project_id>/tasks/new/', views.task_create, name='task_create'),
+    path('projects/<int:project_id>/tasks/<int:task_id>/', views.task_detail, name='task_detail'),
+    path('projects/<int:project_id>/tasks/<int:task_id>/edit/', views.task_edit, name='task_edit'),
+    
+    # Attendance tracking
+    path('projects/<int:project_id>/meetings/', views.meeting_list, name='meeting_list'),
+    path('projects/<int:project_id>/meetings/new/', views.meeting_create, name='meeting_create'),
+    path('projects/<int:project_id>/meetings/<int:meeting_id>/', views.meeting_detail, name='meeting_detail'),
+    path('projects/<int:project_id>/meetings/<int:meeting_id>/attendance/', views.attendance_record, name='attendance_record'),
+]
