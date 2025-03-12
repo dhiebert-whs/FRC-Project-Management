@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+import sys
 
 # Get the directory of the executable in PyInstaller
 if getattr(sys, 'frozen', False):
