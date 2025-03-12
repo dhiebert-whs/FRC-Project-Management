@@ -12,7 +12,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.core import serializers
 from django.db import transaction
 from django.utils import timezone
-from django.utils.timedelta import duration_string
 from datetime import timedelta
 
 import svgwrite
