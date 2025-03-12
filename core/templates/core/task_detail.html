@@ -1,0 +1,214 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ task.title }} - FRC Project Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>{{ task.title }}</h1>
+        <p class="text-muted">Project: <a href="{% url 'core:project_detail' project.id %}">{{ project.name }}</a></p>
+    </div>
+    <div>
+        <a href="{% url 'core:task_edit' project.id task.id %}" class="btn btn-warning">Edit</a>
+        <button class="btn btn-success" id="completeTaskBtn" {% if task.completed %}disabled{% endif %}>
+            {% if task.completed %}Completed{% else %}Mark Complete{% endif %}
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Task Details</h5>
+            </div>
+            <div class="card-body">
+                <h6>Description</h6>
+                <p>{{ task.description|linebreaksbr|default:"No description provided." }}</p>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <h6>Progress</h6>
+                        <div class="progress" style="height: 25px;">
+                            <div class="progress-bar {% if task.progress < 25 %}bg-danger{% elif task.progress < 75 %}bg-warning{% else %}bg-success{% endif %}" 
+                                role="progressbar" 
+                                style="width: {{ task.progress }}%;" 
+                                aria-valuenow="{{ task.progress }}" 
+                                aria-valuemin="0" 
+                                aria-valuemax="100">
+                                {{ task.progress }}%
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Priority</h6>
+                        <span class="badge {% if task.priority == 1 %}bg-info{% elif task.priority == 2 %}bg-success{% elif task.priority == 3 %}bg-warning{% else %}bg-danger{% endif %} fs-6">
+                            {{ task.get_priority_display }}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <dl>
+                            <dt>Subsystem</dt>
+                            <dd>{{ task.subsystem.name }}</dd>
+                            
+                            <dt>Estimated Duration</dt>
+                            <dd>{{ task.estimated_duration }}</dd>
+                            
+                            {% if task.actual_duration %}
+                            <dt>Actual Duration</dt>
+                            <dd>{{ task.actual_duration }}</dd>
+                            {% endif %}
+                        </dl>
+                    </div>
+                    <div class="col-md-6">
+                        <dl>
+                            <dt>Start Date</dt>
+                            <dd>{{ task.start_date|default:"Not set" }}</dd>
+                            
+                            <dt>End Date</dt>
+                            <dd>{{ task.end_date|default:"Not set" }}</dd>
+                            
+                            <dt>Status</dt>
+                            <dd>
+                                {% if task.completed %}
+                                <span class="badge bg-success">Completed</span>
+                                {% else %}
+                                <span class="badge bg-primary">In Progress</span>
+                                {% endif %}
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Dependencies</h5>
+                    </div>
+                    <div class="card-body">
+                        <h6>Tasks that must be completed first:</h6>
+                        {% if task.pre_dependencies.exists %}
+                            <ul class="list-group">
+                                {% for dep in task.pre_dependencies.all %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <a href="{% url 'core:task_detail' project.id dep.id %}">{{ dep.title }}</a>
+                                        {% if dep.completed %}
+                                            <span class="badge bg-success">Completed</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">Pending</span>
+                                        {% endif %}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="text-muted">No required components.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Assigned Team Members</h5>
+            </div>
+            <div class="card-body">
+                {% if task.assigned_to.exists %}
+                    <ul class="list-group">
+                        {% for member in task.assigned_to.all %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ member }}
+                                {% if member.is_leader %}
+                                    <span class="badge bg-primary">Leader</span>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted">No team members assigned to this task.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5>Update Progress</h5>
+            </div>
+            <div class="card-body">
+                <form id="progressForm" method="post" action="{% url 'core:task_update_progress' project.id task.id %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="progressInput" class="form-label">Progress (%)</label>
+                        <input type="range" class="form-range" min="0" max="100" value="{{ task.progress }}" id="progressSlider">
+                        <input type="number" class="form-control" id="progressInput" name="progress" value="{{ task.progress }}" min="0" max="100">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Update Progress</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Sync the slider and input field
+    document.getElementById('progressSlider').addEventListener('input', function() {
+        document.getElementById('progressInput').value = this.value;
+    });
+    
+    document.getElementById('progressInput').addEventListener('input', function() {
+        document.getElementById('progressSlider').value = this.value;
+    });
+    
+    // Handle the complete task button
+    document.getElementById('completeTaskBtn').addEventListener('click', function() {
+        // Set progress to 100%
+        document.getElementById('progressInput').value = 100;
+        document.getElementById('progressSlider').value = 100;
+        
+        // Submit the form
+        document.getElementById('progressForm').submit();
+    });
+</script>
+{% endblock %}
+                        <h6 class="mt-3">Tasks that depend on this:</h6>
+                        {% if task.post_dependencies.exists %}
+                            <ul class="list-group">
+                                {% for dep in task.post_dependencies.all %}
+                                    <li class="list-group-item">
+                                        <a href="{% url 'core:task_detail' project.id dep.id %}">{{ dep.title }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p class="text-muted">No dependent tasks.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Required Components</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if task.required_components.exists %}
+                            <ul class="list-group">
+                                {% for component in task.required_components.all %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        {{ component.name }}
+                                        {% if component.is_delivered %}
+                                            <span class="badge bg-success">Available</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Not Available</span>
+                                        {% endif %}

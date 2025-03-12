@@ -1,0 +1,12 @@
+class SubteamForm(forms.ModelForm):
+    class Meta:
+        model = Subteam
+        fields = ['name', 'color_code', 'specialties']
+        widgets = {
+            'color_code': forms.TextInput(attrs={'type': 'color'}),
+            'specialties': forms.Textarea(attrs={'rows': 3}),
+        }
+        help_texts = {
+            'color_code': 'Select a color for the subteam',
+            'specialties': 'Enter comma-separated skills or focus areas of this subteam'
+        }

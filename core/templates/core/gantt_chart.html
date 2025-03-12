@@ -1,0 +1,301 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Gantt Chart - {{ project.name }} - FRC Project Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>Gantt Chart</h1>
+        <p class="text-muted">Project: <a href="{% url 'core:project_detail' project.id %}">{{ project.name }}</a></p>
+    </div>
+    <div>
+        <a href="{% url 'core:gantt_export' project.id %}" class="btn btn-primary">Export SVG</a>
+        <a href="{% url 'core:task_create' project.id %}" class="btn btn-success">+ Add Task</a>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Project Timeline</h5>
+            <div>
+                <button class="btn btn-sm btn-outline-secondary" id="viewBySubsystemBtn">View by Subsystem</button>
+                <button class="btn btn-sm btn-outline-secondary" id="viewBySubteamBtn">View by Subteam</button>
+                <button class="btn btn-sm btn-outline-secondary" id="viewByMemberBtn">View by Team Member</button>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <div id="ganttContainer" style="height: 600px; width: 100%;"></div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Critical Path</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Critical path analysis will be implemented in a future update.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Project Statistics</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Overall Progress</h6>
+                        <div class="progress mb-2" style="height: 25px;">
+                            <div class="progress-bar bg-success" 
+                                 role="progressbar" 
+                                 style="width: {{ overall_progress }}%;" 
+                                 aria-valuenow="{{ overall_progress }}" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="100">
+                                {{ overall_progress }}%
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Milestone Status</h6>
+                        <p>{{ completed_milestones }} / {{ total_milestones }} completed</p>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <h6>Tasks by Status</h6>
+                        <canvas id="taskStatusChart" height="150"></canvas>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Tasks by Priority</h6>
+                        <canvas id="taskPriorityChart" height="150"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/min/moment.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Task data
+    const tasks = {{ tasks_json|safe }};
+    const projectStart = new Date('{{ project.start_date|date:"Y-m-d" }}');
+    const projectEnd = new Date('{{ project.hard_deadline|date:"Y-m-d" }}');
+    
+    // Render the Gantt chart
+    renderGanttChart(tasks, 'subsystem');
+    
+    // Initialize statistics charts
+    renderTaskStatusChart();
+    renderTaskPriorityChart();
+    
+    // View buttons event listeners
+    document.getElementById('viewBySubsystemBtn').addEventListener('click', function() {
+        renderGanttChart(tasks, 'subsystem');
+    });
+    
+    document.getElementById('viewBySubteamBtn').addEventListener('click', function() {
+        renderGanttChart(tasks, 'subteam');
+    });
+    
+    document.getElementById('viewByMemberBtn').addEventListener('click', function() {
+        renderGanttChart(tasks, 'member');
+    });
+    
+    function renderGanttChart(tasks, groupBy) {
+        const container = document.getElementById('ganttContainer');
+        container.innerHTML = '';
+        
+        // Create a table for the Gantt chart
+        const table = document.createElement('table');
+        table.className = 'table table-bordered';
+        
+        // Add header row with dates
+        const dateRange = getDaysBetweenDates(projectStart, projectEnd);
+        
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+        
+        // Add task name header
+        const taskHeader = document.createElement('th');
+        taskHeader.textContent = 'Task';
+        taskHeader.style.minWidth = '200px';
+        headerRow.appendChild(taskHeader);
+        
+        // Add date headers
+        dateRange.forEach(date => {
+            const dateHeader = document.createElement('th');
+            dateHeader.textContent = moment(date).format('MM/DD');
+            dateHeader.style.minWidth = '40px';
+            headerRow.appendChild(dateHeader);
+        });
+        
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+        
+        // Add task rows
+        const tbody = document.createElement('tbody');
+        
+        // Group tasks based on the selected view
+        const groupedTasks = groupTasksBy(tasks, groupBy);
+        
+        // Create rows for each group
+        for (const [groupName, groupTasks] of Object.entries(groupedTasks)) {
+            // Add group header row
+            const groupRow = document.createElement('tr');
+            const groupCell = document.createElement('td');
+            groupCell.textContent = groupName;
+            groupCell.colSpan = dateRange.length + 1;
+            groupCell.className = 'table-secondary';
+            groupCell.style.fontWeight = 'bold';
+            groupRow.appendChild(groupCell);
+            tbody.appendChild(groupRow);
+            
+            // Add tasks in this group
+            groupTasks.forEach(task => {
+                const taskRow = document.createElement('tr');
+                
+                // Task name cell
+                const nameCell = document.createElement('td');
+                nameCell.innerHTML = `<a href="/projects/${task.project_id}/tasks/${task.id}/">${task.title}</a>
+                                     <div class="progress mt-1" style="height: 5px;">
+                                         <div class="progress-bar" role="progressbar" style="width: ${task.progress}%"></div>
+                                     </div>`;
+                taskRow.appendChild(nameCell);
+                
+                // Calculate task position in the timeline
+                const taskStart = task.start_date ? new Date(task.start_date) : projectStart;
+                const taskEnd = task.end_date ? new Date(task.end_date) : 
+                               new Date(moment(taskStart).add(task.estimated_duration_days, 'days').format('YYYY-MM-DD'));
+                
+                // Add cells for each date
+                dateRange.forEach(date => {
+                    const dateCell = document.createElement('td');
+                    
+                    // Check if this date falls within the task date range
+                    const currentDate = new Date(date);
+                    if (currentDate >= taskStart && currentDate <= taskEnd) {
+                        dateCell.className = task.completed ? 'bg-success' : 'bg-primary';
+                        dateCell.style.opacity = '0.7';
+                    }
+                    
+                    taskRow.appendChild(dateCell);
+                });
+                
+                tbody.appendChild(taskRow);
+            });
+        }
+        
+        table.appendChild(tbody);
+        container.appendChild(table);
+    }
+    
+    function getDaysBetweenDates(startDate, endDate) {
+        const dates = [];
+        let currentDate = new Date(startDate);
+        
+        while (currentDate <= endDate) {
+            dates.push(new Date(currentDate));
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+        
+        return dates;
+    }
+    
+    function groupTasksBy(tasks, groupBy) {
+        const grouped = {};
+        
+        tasks.forEach(task => {
+            let groupKey = '';
+            
+            if (groupBy === 'subsystem') {
+                groupKey = task.subsystem_name;
+            } else if (groupBy === 'subteam') {
+                groupKey = task.subteam_name || 'Unassigned';
+            } else if (groupBy === 'member') {
+                if (task.assigned_members && task.assigned_members.length > 0) {
+                    task.assigned_members.forEach(member => {
+                        if (!grouped[member]) {
+                            grouped[member] = [];
+                        }
+                        grouped[member].push(task);
+                    });
+                    return; // Skip the default grouping below
+                } else {
+                    groupKey = 'Unassigned';
+                }
+            }
+            
+            if (!grouped[groupKey]) {
+                grouped[groupKey] = [];
+            }
+            grouped[groupKey].push(task);
+        });
+        
+        return grouped;
+    }
+    
+    function renderTaskStatusChart() {
+        const ctx = document.getElementById('taskStatusChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Completed', 'In Progress'],
+                datasets: [{
+                    data: [{{ completed_tasks }}, {{ in_progress_tasks }}],
+                    backgroundColor: ['#28a745', '#007bff']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+    
+    function renderTaskPriorityChart() {
+        const ctx = document.getElementById('taskPriorityChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Low', 'Medium', 'High', 'Critical'],
+                datasets: [{
+                    data: [
+                        {{ priority_counts.1|default:0 }}, 
+                        {{ priority_counts.2|default:0 }}, 
+                        {{ priority_counts.3|default:0 }}, 
+                        {{ priority_counts.4|default:0 }}
+                    ],
+                    backgroundColor: ['#17a2b8', '#28a745', '#ffc107', '#dc3545']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

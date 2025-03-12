@@ -15,6 +15,8 @@ urlpatterns = [
     path('projects/<int:project_id>/delete/', views.project_delete, name='project_delete'),
     path('projects/<int:project_id>/save/', views.project_save, name='project_save'),
     path('projects/load/', views.project_load, name='project_load'),
+    path('projects/<int:project_id>/tasks/<int:task_id>/update-progress/', views.task_update_progress, name='task_update_progress'),
+
     
     # Gantt chart and visualization
     path('projects/<int:project_id>/gantt/', views.gantt_chart, name='gantt_chart'),
