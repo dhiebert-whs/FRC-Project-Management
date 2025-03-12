@@ -1,5 +1,6 @@
 from django import forms
-from .models import Project, Subteam, Task, Subsystem, Meeting, TeamMember
+from django.utils import timezone
+from .models import Project, Subteam, Task, Subsystem, Meeting, TeamMember, Attendance
 
 class ProjectForm(forms.ModelForm):
     class Meta:
@@ -105,4 +106,58 @@ class TeamMemberForm(forms.ModelForm):
             'skills': 'Enter comma-separated skills of this team member',
             'is_leader': 'Check if this member is a subteam leader'
         }
+class MeetingForm(forms.ModelForm):
+    class Meta:
+        model = Meeting
+        fields = ['date', 'start_time', 'end_time', 'notes']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'}),
+            'start_time': forms.TimeInput(attrs={'type': 'time'}),
+            'end_time': forms.TimeInput(attrs={'type': 'time'}),
+            'notes': forms.Textarea(attrs={'rows': 3}),
+        }
+        
+    def clean(self):
+        cleaned_data = super().clean()
+        start_time = cleaned_data.get('start_time')
+        end_time = cleaned_data.get('end_time')
+        
+        if start_time and end_time and end_time <= start_time:
+            self.add_error('end_time', "End time must be after start time")
+        
+        return cleaned_data
 
+class AttendanceFormSet(forms.BaseModelFormSet):
+    def __init__(self, *args, meeting=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.meeting = meeting
+        
+    def save_new(self, form, commit=True):
+        attendance = super().save_new(form, commit=False)
+        attendance.meeting = self.meeting
+        if commit:
+            attendance.save()
+        return attendance
+
+class AttendanceForm(forms.ModelForm):
+    class Meta:
+        model = Attendance
+        fields = ['member', 'present', 'arrival_time', 'departure_time']
+        widgets = {
+            'arrival_time': forms.TimeInput(attrs={'type': 'time'}),
+            'departure_time': forms.TimeInput(attrs={'type': 'time'}),
+        }
+        
+    def clean(self):
+        cleaned_data = super().clean()
+        present = cleaned_data.get('present')
+        arrival_time = cleaned_data.get('arrival_time')
+        departure_time = cleaned_data.get('departure_time')
+        
+        if present and not arrival_time:
+            self.add_error('arrival_time', "Please specify arrival time for present members")
+            
+        if departure_time and arrival_time and departure_time < arrival_time:
+            self.add_error('departure_time', "Departure time must be after arrival time")
+            
+        return cleaned_data

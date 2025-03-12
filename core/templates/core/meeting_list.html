@@ -1,0 +1,111 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Meetings - {{ project.name }} - FRC Project Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>Meetings</h1>
+        <p class="text-muted">Project: <a href="{% url 'core:project_detail' project.id %}">{{ project.name }}</a></p>
+    </div>
+    <a href="{% url 'core:meeting_create' project.id %}" class="btn btn-primary">+ Schedule Meeting</a>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Upcoming Meetings</h5>
+            </div>
+            <div class="card-body">
+                {% if upcoming_meetings %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Attendance</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for meeting in upcoming_meetings %}
+                                    <tr>
+                                        <td>{{ meeting.date }}</td>
+                                        <td>{{ meeting.start_time }} - {{ meeting.end_time }}</td>
+                                        <td>
+                                            {% with attendance_count=meeting.attendances.count %}
+                                                {% if attendance_count > 0 %}
+                                                    <span class="badge bg-success">{{ attendance_count }} recorded</span>
+                                                {% else %}
+                                                    <span class="badge bg-warning">Not recorded</span>
+                                                {% endif %}
+                                            {% endwith %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a href="{% url 'core:meeting_detail' project.id meeting.id %}" class="btn btn-sm btn-info">View</a>
+                                                <a href="{% url 'core:attendance_record' project.id meeting.id %}" class="btn btn-sm btn-primary">Attendance</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No upcoming meetings scheduled. <a href="{% url 'core:meeting_create' project.id %}">Schedule a meeting</a> to get started.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Past Meetings</h5>
+            </div>
+            <div class="card-body">
+                {% if past_meetings %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Attendance</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for meeting in past_meetings %}
+                                    <tr>
+                                        <td>{{ meeting.date }}</td>
+                                        <td>{{ meeting.start_time }} - {{ meeting.end_time }}</td>
+                                        <td>
+                                            {% with attendance_count=meeting.attendances.count %}
+                                                {% if attendance_count > 0 %}
+                                                    <span class="badge bg-success">{{ attendance_count }} recorded</span>
+                                                {% else %}
+                                                    <span class="badge bg-warning">Not recorded</span>
+                                                {% endif %}
+                                            {% endwith %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a href="{% url 'core:meeting_detail' project.id meeting.id %}" class="btn btn-sm btn-info">View</a>
+                                                <a href="{% url 'core:attendance_record' project.id meeting.id %}" class="btn btn-sm btn-primary">Attendance</a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No past meetings found.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -15,6 +15,9 @@ from django.http import HttpResponse
 import svgwrite
 from datetime import timedelta
 
+from django.forms import modelformset_factory
+from .forms import MeetingForm, AttendanceForm
+
 # Dashboard
 @login_required
 def dashboard(request):
@@ -401,29 +404,121 @@ def task_update_progress(request, project_id, task_id):
 @login_required
 def meeting_list(request, project_id):
     project = get_object_or_404(Project, id=project_id)
-    meetings = Meeting.objects.filter(project=project)
-    return render(request, 'core/meeting_list.html', {'project': project, 'meetings': meetings})
+    meetings = Meeting.objects.filter(project=project).order_by('-date', '-start_time')
+    
+    today = timezone.now().date()
+    upcoming_meetings = meetings.filter(date__gte=today)
+    past_meetings = meetings.filter(date__lt=today)
+    
+    context = {
+        'project': project,
+        'upcoming_meetings': upcoming_meetings,
+        'past_meetings': past_meetings,
+    }
+    
+    return render(request, 'core/meeting_list.html', context)
 
+@login_required
 @login_required
 def meeting_create(request, project_id):
     project = get_object_or_404(Project, id=project_id)
-    # TODO: Implement meeting creation form
-    messages.info(request, 'Meeting creation functionality coming soon.')
-    return redirect('core:meeting_list', project_id=project.id)
+    
+    if request.method == 'POST':
+        form = MeetingForm(request.POST)
+        if form.is_valid():
+            meeting = form.save(commit=False)
+            meeting.project = project
+            meeting.save()
+            
+            messages.success(request, 'Meeting created successfully. Now you can record attendance.')
+            return redirect('core:attendance_record', project_id=project.id, meeting_id=meeting.id)
+    else:
+        # Default to today's date
+        form = MeetingForm(initial={'date': timezone.now().date()})
+    
+    return render(request, 'core/meeting_form.html', {
+        'form': form,
+        'project': project,
+        'title': 'Schedule New Meeting'
+    })
 
 @login_required
 def meeting_detail(request, project_id, meeting_id):
     project = get_object_or_404(Project, id=project_id)
     meeting = get_object_or_404(Meeting, id=meeting_id, project=project)
-    return render(request, 'core/meeting_detail.html', {'project': project, 'meeting': meeting})
+    attendances = meeting.attendances.all().select_related('member', 'member__user', 'member__subteam')
+    
+    # Count statistics
+    total_members = TeamMember.objects.count()
+    present_members = attendances.filter(present=True).count()
+    absent_members = total_members - present_members
+    attendance_percentage = (present_members / total_members * 100) if total_members > 0 else 0
+    
+    context = {
+        'project': project,
+        'meeting': meeting,
+        'attendances': attendances,
+        'total_members': total_members,
+        'present_members': present_members,
+        'absent_members': absent_members,
+        'attendance_percentage': attendance_percentage,
+    }
+    
+    return render(request, 'core/meeting_detail.html', context)
 
 @login_required
 def attendance_record(request, project_id, meeting_id):
     project = get_object_or_404(Project, id=project_id)
     meeting = get_object_or_404(Meeting, id=meeting_id, project=project)
-    # TODO: Implement attendance recording form
-    messages.info(request, 'Attendance recording functionality coming soon.')
-    return redirect('core:meeting_detail', project_id=project.id, meeting_id=meeting.id)
+    
+    # Get all team members
+    members = TeamMember.objects.all().select_related('user', 'subteam')
+    
+    # Create or get attendance records for each member
+    if request.method == 'POST':
+        for member in members:
+            member_id = str(member.id)
+            if f'present_{member_id}' in request.POST:
+                present = request.POST.get(f'present_{member_id}') == 'on'
+                arrival_time = request.POST.get(f'arrival_{member_id}') or None
+                departure_time = request.POST.get(f'departure_{member_id}') or None
+                
+                attendance, created = Attendance.objects.get_or_create(
+                    meeting=meeting,
+                    member=member,
+                    defaults={
+                        'present': present,
+                        'arrival_time': arrival_time,
+                        'departure_time': departure_time
+                    }
+                )
+                
+                if not created:
+                    attendance.present = present
+                    attendance.arrival_time = arrival_time
+                    attendance.departure_time = departure_time
+                    attendance.save()
+        
+        messages.success(request, 'Attendance recorded successfully.')
+        return redirect('core:meeting_detail', project_id=project.id, meeting_id=meeting.id)
+    
+    # Prepare data for the form
+    attendance_data = {}
+    for attendance in Attendance.objects.filter(meeting=meeting):
+        attendance_data[attendance.member.id] = {
+            'present': attendance.present,
+            'arrival_time': attendance.arrival_time,
+            'departure_time': attendance.departure_time
+        }
+    
+    context = {
+        'project': project,
+        'meeting': meeting,
+        'members': members,
+        'attendance_data': attendance_data,
+    }
+    
+    return render(request, 'core/attendance_form.html', context)
 
 #members
 @login_required
