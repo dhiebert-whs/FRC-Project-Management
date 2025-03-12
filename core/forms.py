@@ -1,5 +1,5 @@
 from django import forms
-from .models import Project, Subteam, Task, Subsystem
+from .models import Project, Subteam, Task, Subsystem, Meeting, TeamMember
 
 class ProjectForm(forms.ModelForm):
     class Meta:

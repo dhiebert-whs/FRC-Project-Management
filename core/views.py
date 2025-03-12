@@ -11,6 +11,10 @@ import json
 from django.utils.timedelta import duration_string
 from datetime import timedelta
 
+from django.http import HttpResponse
+import svgwrite
+from datetime import timedelta
+
 # Dashboard
 @login_required
 def dashboard(request):
@@ -155,9 +159,72 @@ def gantt_chart(request, project_id):
 @login_required
 def gantt_export(request, project_id):
     project = get_object_or_404(Project, id=project_id)
-    # TODO: Implement SVG export
-    messages.info(request, 'Gantt chart export functionality coming soon.')
-    return redirect('core:gantt_chart', project_id=project.id)
+    tasks = Task.objects.filter(project=project).select_related('subsystem')
+    
+    # Create SVG
+    dwg = svgwrite.Drawing('gantt_chart.svg', profile='tiny', size=('1200px', '800px'))
+    
+    # Add title
+    dwg.add(dwg.text(f'Gantt Chart - {project.name}', insert=(50, 30), style='font-size:20px; font-weight:bold;'))
+    
+    # Calculate date range
+    start_date = project.start_date
+    end_date = project.hard_deadline
+    days_range = (end_date - start_date).days + 1
+    
+    # Draw grid
+    grid_start_y = 80
+    grid_end_y = 600
+    day_width = min(30, (1100 / days_range))
+    
+    # Draw vertical lines for dates
+    for i in range(days_range + 1):
+        x = 100 + (i * day_width)
+        dwg.add(dwg.line((x, grid_start_y - 20), (x, grid_end_y), stroke='#cccccc', stroke_width=1))
+        
+        # Add date labels for every 5 days
+        if i % 5 == 0:
+            date_label = (start_date + timedelta(days=i)).strftime('%m/%d')
+            dwg.add(dwg.text(date_label, insert=(x - 15, grid_start_y - 5), style='font-size:10px;'))
+    
+    # Draw horizontal lines and task bars
+    y_pos = grid_start_y
+    for i, task in enumerate(tasks):
+        # Task name
+        dwg.add(dwg.text(task.title[:30], insert=(10, y_pos + 15), style='font-size:12px;'))
+        
+        # Calculate task position
+        task_start = task.start_date if task.start_date else start_date
+        task_end = task.end_date if task.end_date else (task_start + task.estimated_duration)
+        
+        task_start_x = 100 + ((task_start - start_date).days * day_width)
+        task_duration_days = (task_end - task_start).days + 1
+        task_width = max(2, task_duration_days * day_width)
+        
+        # Task bar color based on completion
+        bar_color = '#4caf50' if task.completed else '#2196f3'
+        
+        # Draw task bar
+        dwg.add(dwg.rect((task_start_x, y_pos + 5), (task_width, 20), 
+                         fill=bar_color, stroke='#000000', stroke_width=1))
+        
+        # Draw progress bar
+        if task.progress > 0 and not task.completed:
+            progress_width = (task.progress / 100) * task_width
+            dwg.add(dwg.rect((task_start_x, y_pos + 5), (progress_width, 20), 
+                             fill='#8bc34a', stroke='none'))
+        
+        # Horizontal line below task
+        dwg.add(dwg.line((100, y_pos + 30), (100 + (days_range * day_width), y_pos + 30), 
+                         stroke='#eeeeee', stroke_width=1))
+        
+        y_pos += 40
+    
+    # Return SVG as response
+    svg_content = dwg.tostring()
+    response = HttpResponse(svg_content, content_type='image/svg+xml')
+    response['Content-Disposition'] = f'attachment; filename="gantt_chart_{project.name}.svg"'
+    return response
 
 @login_required
 def daily_view(request, project_id, date):
