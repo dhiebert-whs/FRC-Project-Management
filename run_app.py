@@ -7,6 +7,7 @@ from django.core.wsgi import get_wsgi_application
 if getattr(sys, 'frozen', False):
     # When running as compiled exe
     BASE_DIR = os.path.dirname(sys.executable)
+    # Add BASE_DIR to path so Python can find your modules
     sys.path.insert(0, BASE_DIR)
 else:
     # In development
@@ -20,27 +21,21 @@ application = get_wsgi_application()
 
 # Run waitress server
 if __name__ == '__main__':
-    from django import setup
-    setup()
-    
-    # Create database if it doesn't exist
+    # Import Django modules AFTER the settings are configured
     from django.core.management import call_command
+    import django
+    django.setup()
     
     print("\n==== FRC Project Management System ====")
     print("\nChecking database...")
     
-    # Check if we need to run migrations
-    import django.db
+    # Run migrations automatically
     try:
-        django.db.connection.cursor()
-        # If no error, database exists
-        print("Database connected successfully!")
-    except django.db.OperationalError:
-        print("Setting up database for first run...")
-        call_command('migrate')
-        print("Database setup complete!")
+        print("Setting up database (running migrations)...")
+        call_command('migrate', interactive=False)
+        print("Database migrations complete!")
         
-        # Create a superuser if none exists
+        # Check if we need to create a superuser
         from django.contrib.auth.models import User
         if not User.objects.filter(is_superuser=True).exists():
             print("\nNo admin account found. Let's create one:")
@@ -51,6 +46,9 @@ if __name__ == '__main__':
             
             User.objects.create_superuser(username=username, email=email, password=password)
             print(f"Admin user '{username}' created successfully!")
+    except Exception as e:
+        print(f"Error during database setup: {str(e)}")
+        print("Please run migrations manually with: python manage.py migrate")
     
     print("\nStarting server...")
     print("\n* Access the application at: http://localhost:8000")

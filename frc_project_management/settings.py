@@ -78,13 +78,22 @@ TEMPLATES = [
 WSGI_APPLICATION = 'frc_project_management.wsgi.application'
 
 
-# Configure database to use a local SQLite file
+#Configure database to use a local SQLite file
+db_path = os.path.join(BASE_DIR, 'db.sqlite3')
+db_dir = os.path.dirname(db_path)
+
+# Ensure database directory exists
+if not os.path.exists(db_dir):
+    try:
+        os.makedirs(db_dir)
+    except OSError:
+        pass  # Handle case where directory creation fails
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': db_path,
     }
-
 }
 
 
