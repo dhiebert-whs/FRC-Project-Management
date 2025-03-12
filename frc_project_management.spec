@@ -10,6 +10,7 @@ a = Analysis(
     datas=[
         ('core/templates', 'core/templates'),
         ('static', 'static'),
+        ('core/templates/registration', 'core/templates/registration'),
     ],
     hiddenimports=[
         'django.template.defaulttags',
