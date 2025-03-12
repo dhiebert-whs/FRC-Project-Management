@@ -1,258 +1,246 @@
-# Project Persistence: Developer Installation Guide
+# FRC Project Management System Developer Guide
 
-This guide explains how to implement the Project Persistence feature in the FRC Project Management System.
+## System Architecture
 
-## Overview
+The FRC Project Management System is built using Django, a high-level Python web framework. This guide provides information for developers who need to maintain, extend, or customize the application.
 
-The Project Persistence feature adds the ability to export projects to JSON files and import them back. This implementation includes:
+### Technology Stack
 
-1. Export functionality that serializes all project-related data
-2. Import functionality that handles creating entities and maintaining relationships
-3. User interface elements for both operations
-4. Error handling and progress tracking
+- **Backend**: Django 5.1.7
+- **Database**: PostgreSQL (production) / SQLite (development)
+- **Frontend**: 
+  - Django Templates
+  - Bootstrap 5.3
+  - JavaScript
+  - Chart.js (for data visualization)
+- **Additional Libraries**:
+  - django-widget-tweaks
+  - svgwrite (for Gantt chart export)
+  - markdown (for documentation)
 
-## Installation Steps
+## Project Structure
 
-### 1. Add Template Files
+The application follows a standard Django project structure:
 
-Copy these template files to your project:
-
-- `core/templates/core/project_load.html` - Import form template
-- `core/templates/core/import_error.html` - Error handling template
-
-### 2. Update Views
-
-Add these functions to `core/views.py`:
-
-```python
-@login_required
-def project_save(request, project_id):
-    """
-    Export a project and all its related data to a JSON file
-    """
-    project = get_object_or_404(Project, id=project_id)
-    
-    # Get related data
-    tasks = Task.objects.filter(project=project)
-    subsystems = set()
-    for task in tasks:
-        subsystems.add(task.subsystem)
-    
-    milestones = project.milestones.all()
-    meetings = project.meetings.all()
-    
-    # Collect all components and team members referenced by tasks
-    components = set()
-    team_members = set()
-    for task in tasks:
-        components.update(task.required_components.all())
-        team_members.update(task.assigned_to.all())
-    
-    # Get subteams for all team members
-    subteams = set()
-    for member in team_members:
-        if member.subteam:
-            subteams.add(member.subteam)
-    
-    # Serialize all data using Django's serializers
-    project_data = {
-        'project': json.loads(serializers.serialize('json', [project]))[0],
-        'tasks': json.loads(serializers.serialize('json', tasks)),
-        'subsystems': json.loads(serializers.serialize('json', subsystems)),
-        'milestones': json.loads(serializers.serialize('json', milestones)),
-        'meetings': json.loads(serializers.serialize('json', meetings)),
-        'components': json.loads(serializers.serialize('json', components)),
-        'team_members': json.loads(serializers.serialize('json', team_members)),
-        'subteams': json.loads(serializers.serialize('json', subteams)),
-        'export_date': datetime.now().isoformat(),
-        'format_version': '1.0'
-    }
-    
-    # Handle many-to-many relationships for tasks
-    task_relations = {}
-    for task in tasks:
-        task_relations[task.id] = {
-            'pre_dependencies': [dep.id for dep in task.pre_dependencies.all()],
-            'required_components': [comp.id for comp in task.required_components.all()],
-            'assigned_to': [member.id for member in task.assigned_to.all()]
-        }
-    project_data['task_relations'] = task_relations
-    
-    # For attendance records
-    attendance_data = []
-    for meeting in meetings:
-        attendances = meeting.attendances.all()
-        attendance_data.extend(json.loads(serializers.serialize('json', attendances)))
-    project_data['attendance'] = attendance_data
-    
-    # Create response
-    response = HttpResponse(
-        json.dumps(project_data, indent=2),
-        content_type='application/json'
-    )
-    response['Content-Disposition'] = f'attachment; filename="{project.name.replace(" ", "_")}.json"'
-    return response
-
-@login_required
-def project_load(request):
-    """
-    Import a project from a JSON file
-    """
-    if request.method == 'POST' and request.FILES.get('project_file'):
-        try:
-            project_file = request.FILES['project_file']
-            project_data = json.loads(project_file.read().decode('utf-8'))
-            
-            # Validate the format
-            if 'format_version' not in project_data or 'project' not in project_data:
-                return render(request, 'core/import_error.html', {
-                    'error_message': 'Invalid project file format. The file may be corrupted or not a valid project export.',
-                    'technical_details': 'Missing format_version or project fields'
-                })
-            
-            rename_duplicates = request.POST.get('rename_duplicates', False) == 'on'
-            
-            with transaction.atomic():
-                # Implementation of project import logic
-                # (Full implementation shown in the code examples)
-            
-            messages.success(request, f'Project "{new_project.name}" imported successfully!')
-            return redirect('core:project_detail', project_id=new_project.id)
-            
-        except json.JSONDecodeError as e:
-            return render(request, 'core/import_error.html', {
-                'error_message': 'Invalid JSON format. The file may be corrupted.',
-                'technical_details': str(e)
-            })
-        except Exception as e:
-            return render(request, 'core/import_error.html', {
-                'error_message': f'Error importing project: {str(e)}',
-                'technical_details': str(e)
-            })
-    
-    return render(request, 'core/project_load.html')
+```
+frc_project_management/         # Main project directory
+├── frc_project_management/     # Project settings package
+│   ├── __init__.py
+│   ├── asgi.py
+│   ├── settings.py             # Django settings
+│   ├── urls.py                 # Main URL routing
+│   └── wsgi.py
+├── core/                       # Main application package
+│   ├── __init__.py
+│   ├── admin.py                # Admin interface configuration
+│   ├── apps.py
+│   ├── forms.py                # Form definitions
+│   ├── migrations/             # Database migrations
+│   ├── models.py               # Data models
+│   ├── templates/              # HTML templates
+│   │   └── core/               # Application templates
+│   ├── tests.py                # Test cases
+│   ├── urls.py                 # App-specific URL routing
+│   └── views.py                # View functions
+├── static/                     # Static files (CSS, JS, etc.)
+│   └── docs/                   # Documentation files
+└── manage.py                   # Django command-line utility
 ```
 
-### 3. Update URLs
+## Data Models
 
-Ensure your `core/urls.py` includes these paths:
+The system's database schema is defined by the following key models:
 
-```python
-path('projects/<int:project_id>/save/', views.project_save, name='project_save'),
-path('projects/load/', views.project_load, name='project_load'),
+### Project Model
+Central entity representing a robotics build project.
+
+### Subteam Model
+Represents a functional group within the team (e.g., Programming, Mechanical).
+
+### TeamMember Model
+Extends the Django User model with additional fields for team management.
+
+### Subsystem Model
+Represents a logical component of the robot (e.g., Drivetrain, Arm).
+
+### Task Model
+Represents a single work item with dependencies, assignments, and progress tracking.
+
+### Component Model
+Represents a physical part or component needed for tasks.
+
+### Meeting Model
+Represents a team meeting with date, time, and attendance tracking.
+
+### Attendance Model
+Links team members to meetings with presence and timing information.
+
+### Milestone Model
+Represents significant project events or deadlines.
+
+## Key Functionality
+
+### Authentication and Authorization
+
+The system uses Django's built-in authentication system. URL patterns in `core/urls.py` are protected with the `@login_required` decorator to ensure only authenticated users can access the application.
+
+### Form Handling
+
+Forms are defined in `core/forms.py` and use Django's ModelForm system with widget customizations from django-widget-tweaks.
+
+### Project Persistence
+
+The Project Persistence functionality allows exporting and importing projects as JSON files, enabling:
+- Project backups
+- Project sharing between teams
+- Version control for projects
+
+#### Export Process
+
+1. The `project_save` view in `core/views.py` serializes a project and all related entities
+2. JSON includes project details, tasks, subsystems, members, and relationships
+3. File is returned as an attachment with proper content type
+
+#### Import Process
+
+1. The `project_load` view accepts a JSON file upload
+2. Validates the file structure and content
+3. Uses a database transaction to ensure all-or-nothing import
+4. Handles duplicate entity names and relationships
+5. Provides error handling for invalid files
+
+## Testing
+
+Tests are defined in `core/tests.py` using Django's testing framework. Run tests with:
+
+```bash
+python manage.py test
 ```
 
-### 4. Add Required Imports
+The `ProjectPersistenceTests` class specifically tests the export and import functionality with various scenarios including:
+- Successful export and import
+- Handling of duplicate project names
+- Handling of invalid JSON
+- Error cases (empty files, missing data)
 
-Add these imports to your `views.py`:
+## Extending the System
 
-```python
-import json
-from django.http import JsonResponse, HttpResponse
-from django.core import serializers
-from django.db import transaction
-from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
-from datetime import datetime
-```
+### Adding New Features
 
-### 5. Update UI Templates
+To add a new feature:
 
-1. Modify `project_list.html` to include the import button:
-   ```html
-   <div class="d-flex justify-content-between align-items-center mb-4">
-       <h1>Projects</h1>
-       <div>
-           <a href="{% url 'core:project_load' %}" class="btn btn-info me-2">
-               <!-- SVG icon here -->
-               Import Project
-           </a>
-           <a href="{% url 'core:project_create' %}" class="btn btn-primary">+ New Project</a>
-       </div>
-   </div>
+1. Update the appropriate model(s) in `models.py`
+2. Create a migration: `python manage.py makemigrations`
+3. Apply the migration: `python manage.py migrate`
+4. Add forms in `forms.py`
+5. Create view functions in `views.py`
+6. Add URL patterns in `urls.py`
+7. Create templates in `templates/core/`
+8. Add tests in `tests.py`
+
+### Customizing Templates
+
+The system uses Bootstrap 5.3 for styling. To customize the UI:
+
+1. Edit templates in `core/templates/core/`
+2. For global changes, modify `base.html`
+3. For specific pages, modify the corresponding template
+
+### Adding Export/Import Support for New Entities
+
+If you add new models, update the `project_save` and `project_load` views to include these entities:
+
+1. Add serialization in `project_save`
+2. Add deserialization and creation in `project_load`
+3. Update tests to verify the new entity is properly exported and imported
+
+## Deployment
+
+### Development Environment
+
+1. Create and activate a virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # Linux/Mac
+   venv\Scripts\activate     # Windows
    ```
 
-2. Add export buttons to project cards:
-   ```html
-   <div class="card-footer d-flex justify-content-between">
-       <a href="{% url 'core:project_detail' project.id %}" class="btn btn-info">View</a>
-       <div>
-           <a href="{% url 'core:project_save' project.id %}" class="btn btn-success export-project-btn">
-               <!-- SVG icon here -->
-               Export
-           </a>
-           <a href="{% url 'core:project_edit' project.id %}" class="btn btn-warning">Edit</a>
-       </div>
-   </div>
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
    ```
 
-3. Add JavaScript to `base.html` for progress tracking (see full implementation in files)
+3. Run migrations:
+   ```bash
+   python manage.py migrate
+   ```
 
-### 6. Testing
+4. Create a superuser:
+   ```bash
+   python manage.py createsuperuser
+   ```
 
-Create tests to verify the implementation:
+5. Run the development server:
+   ```bash
+   python manage.py runserver
+   ```
 
-```python
-class ProjectPersistenceTests(TestCase):
-    def setUp(self):
-        # Set up test data (user, project, tasks, etc.)
-        pass
-        
-    def test_project_save(self):
-        # Test exporting a project to JSON
-        pass
-        
-    def test_project_load(self):
-        # Test importing a project from JSON
-        pass
-        
-    def test_duplicate_project_name_handling(self):
-        # Test handling of duplicate project names
-        pass
-        
-    def test_invalid_json_handling(self):
-        # Test handling of invalid JSON files
-        pass
-```
+### Production Deployment
 
-## Common Issues and Solutions
+For production deployment:
 
-1. **Missing Import Dependencies**
-   - Ensure all required modules are imported in `views.py`
+1. Update `settings.py`:
+   - Set `DEBUG = False`
+   - Update `ALLOWED_HOSTS`
+   - Configure a production database (PostgreSQL recommended)
+   - Set a secure `SECRET_KEY`
 
-2. **Template Resolution**
-   - Make sure the templates are in the correct directory structure
+2. Set up a web server (Nginx, Apache) with WSGI (Gunicorn, uWSGI)
 
-3. **JSON Serialization Errors**
-   - Use Django's serializers for model objects
-   - Use manual mapping for complex relationships
+3. Configure static file serving:
+   ```bash
+   python manage.py collectstatic
+   ```
 
-4. **File Upload Configuration**
-   - Ensure `enctype="multipart/form-data"` is set on the form
-   - Check Django's file upload settings
+4. Set up SSL/TLS for secure connections
 
-5. **Database Transactions**
-   - Use `with transaction.atomic():` for all import operations
-   - This ensures the import is rolled back completely if it fails
+## Known Issues and Limitations
 
-6. **Styling Inconsistencies**
-   - Ensure SVG icons match the project's style
-   - Use consistent button colors and sizes
+1. Task dependencies can create circular references if not careful
+2. Large projects with many entities may experience slower export/import times
+3. SVG exports have limited styling options
 
-## Performance Considerations
+## Future Development Roadmap
 
-1. For large projects, consider implementing:
-   - Async processing for import/export
-   - Background tasks using Celery
-   - Progress feedback via WebSockets
+1. API endpoints for integration with other systems
+2. Enhanced critical path analysis
+3. Resource conflict detection
+4. Integration with CAD and version control systems
+5. Mobile-optimized interface for shop floor use
 
-2. Export file size optimizations:
-   - Remove unnecessary fields
-   - Consider pagination or chunking for very large projects
+## Contributing
 
-## Security Considerations
+When contributing to this project:
 
-1. Always validate imported JSON files
-2. Use Django's built-in CSRF protection
-3. Ensure proper permissions are checked (login_required)
-4. Consider rate limiting for import/export operations
+1. Follow PEP 8 style guidelines for Python code
+2. Write tests for new functionality
+3. Update documentation to reflect changes
+4. Use descriptive commit messages
+
+## Troubleshooting
+
+### Common Development Issues
+
+1. **Migration conflicts**:
+   - Create a fresh migration with `--merge` flag:
+   ```bash
+   python manage.py makemigrations --merge
+   ```
+
+2. **Template rendering errors**:
+   - Check context variables passed to the template
+   - Verify template inheritance hierarchy
+
+3. **Form validation issues**:
+   - Inspect form errors in view by printing `form.errors`
+   - Check model constraints and form validation rules

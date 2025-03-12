@@ -1,98 +1,163 @@
-# Project Persistence: User Guide
+# FRC Project Management System User Guide
 
 ## Introduction
 
-The Project Persistence feature allows you to export your FRC Project Management projects to files and import them back later. This is useful for:
+Welcome to the FRC Project Management System! This platform is designed specifically for FIRST Robotics Competition (FRC) teams to manage their build season effectively from kickoff through competition. This guide will walk you through all the features and functionality of the system.
 
-- Creating project backups
-- Sharing project templates with other teams
-- Transferring projects between different installations
-- Creating different versions of a project
+## Getting Started
 
-## Exporting a Project
+### Accessing the System
 
-Exporting a project saves all its data to a JSON file that can be stored on your computer.
+1. Open your web browser and navigate to the application URL
+2. Log in with your username and password
+3. If you don't have an account, contact your team's system administrator
 
-### How to Export a Project:
+### Dashboard Overview
 
-1. From the Projects List:
-   - Navigate to the Projects list page
-   - Find the project you want to export
-   - Click the "Export" button on the project card
+The Dashboard is your home base and provides:
+- A quick overview of all your projects
+- Recent activity across your projects
+- Quick links to common actions
 
-2. From the Project Detail Page:
-   - Open the project you want to export
-   - Click the "Save to File" button in the top-right corner
+## Project Management
 
-3. After clicking the export button:
-   - Your browser will download a JSON file named after your project
-   - The file will contain all project data, including tasks, dependencies, team members, and settings
+### Creating a New Project
 
-### What Gets Exported:
+1. From the Dashboard or Projects page, click the "+ New Project" button
+2. Fill in the required project details:
+   - **Name**: A descriptive name for your project
+   - **Description**: A brief overview of the project's purpose
+   - **Start Date**: When the project begins (usually kickoff)
+   - **Goal End Date**: When you aim to complete the project
+   - **Hard Deadline**: The absolute final deadline (competition date)
+3. Click "Save Project" to create your new project
 
-- Project details (name, description, dates)
-- All tasks and their dependencies
-- Subsystems
-- Team members and subteams
-- Components and resources
-- Milestones and meetings
-- Attendance records
+### Managing Existing Projects
 
-## Importing a Project
+For each project, you can:
+- **View Details**: See all information about the project
+- **Edit**: Update project information
+- **Delete**: Remove a project (use with caution)
+- **Export**: Save the project to a file for backup or sharing
+- **Import**: Load a previously exported project
 
-Importing allows you to load a previously exported project file back into the system.
+### Project Export and Import
 
-### How to Import a Project:
+#### Exporting a Project
 
-1. Go to the Projects list page
-2. Click the "Import Project" button in the top-right corner
-3. In the Import Project page:
-   - Click "Choose File" to select your project JSON file
-   - Check the "Automatically rename" box if you want to avoid name conflicts
-   - Click "Import Project"
-4. Wait for the import to complete
-5. You'll be redirected to the new project's detail page
+1. Navigate to the project you want to export
+2. Click the "Save to File" or "Export" button
+3. The project will be downloaded as a JSON file to your computer
 
-### Import Options:
+#### Importing a Project
 
-- **Automatic Renaming**: If checked, the system will automatically rename imported projects if a project with the same name already exists. For example, "Robot Arm" might become "Robot Arm (Import 1)".
+1. From the Projects page, click "Import Project"
+2. Select a JSON file previously exported from the system
+3. Choose whether to automatically rename the project if a duplicate name exists
+4. Click "Import Project" to load the project into the system
 
-### Handling Duplicates:
+## Task Management
 
-When importing a project, the system attempts to match existing entities:
+### Creating Tasks
 
-- **Subteams**: Matched by name
-- **Components**: Matched by name and part number
-- **Team Members**: Matched by associated user account
-- **Subsystems**: Matched by name
+1. From a project's detail page, click "+ Add Task"
+2. Enter the task details:
+   - **Title**: Clear, descriptive name
+   - **Description**: What needs to be done
+   - **Subsystem**: Which part of the robot this relates to
+   - **Estimated Duration**: How long you expect it to take
+   - **Priority**: Importance of the task
+   - **Start/End Dates**: When work should begin and end
+   - **Dependencies**: Tasks that must be completed first
+   - **Required Components**: Parts needed for the task
+   - **Assigned Team Members**: Who will work on this task
+3. Click "Save Task" to create the task
 
-Matching entities will be reused rather than creating duplicates.
+### Viewing and Updating Tasks
+
+1. Click on any task to view its details
+2. Use the progress slider to update completion percentage
+3. Click "Mark Complete" when the task is finished
+4. Edit any task details as needed with the "Edit" button
+
+## Team Management
+
+### Subteams
+
+Organize your team into functional groups:
+
+1. From the navigation menu, click "Subteams"
+2. Create a new subteam with the "+ New Subteam" button
+3. Assign a name, color code, and specialties to each subteam
+
+### Team Members
+
+1. From the navigation menu, click "Team Members"
+2. Add new team members with the "+ Add Team Member" button
+3. For each member, record:
+   - User account information
+   - Contact details
+   - Subteam assignment
+   - Skills
+   - Leadership status
+
+## Meetings and Attendance
+
+### Scheduling Meetings
+
+1. From a project page, navigate to "Meetings"
+2. Click "+ Schedule Meeting"
+3. Enter meeting details:
+   - Date
+   - Start and end times
+   - Notes or agenda
+
+### Recording Attendance
+
+1. From the meeting details page, click "Record Attendance"
+2. Mark each team member as present or absent
+3. For present members, record arrival and departure times
+4. Click "Save Attendance" to store the information
+
+## Gantt Chart Visualization
+
+The Gantt chart provides a visual timeline of your project:
+
+1. From a project page, click "View Gantt Chart"
+2. Use the view buttons to organize tasks by:
+   - Subsystem
+   - Subteam
+   - Team Member
+3. Export the chart as an SVG file for presentations or documentation
+
+## Daily Operations
+
+### Daily Task View
+
+1. Use the daily view to see what needs to be done in each meeting
+2. Update task progress as work is completed
+3. Reassign tasks if team members are absent
+
+## Tips for Success
+
+1. **Regular Updates**: Keep task progress updated during each meeting
+2. **Dependencies**: Make sure to set proper task dependencies for accurate scheduling
+3. **Attendance**: Track attendance consistently for better resource planning
+4. **Documentation**: Use notes fields to document decisions and changes
+5. **Backups**: Export projects regularly for backup and version control
 
 ## Troubleshooting
 
-### Import Errors:
+### Common Issues
 
-If the import fails, you'll see an error page with details about what went wrong. Common issues include:
+1. **Can't import a project file**:
+   - Ensure the file is a valid JSON file exported from this system
+   - Check that the file isn't corrupted
 
-- **Invalid JSON format**: The file might be corrupted or not a valid JSON file
-- **Incompatible format**: The file might not be a valid project export or was created with a different version of the system
-- **Missing dependencies**: Some required elements might be missing
+2. **Tasks showing incorrect dependencies**:
+   - Review and update the pre-dependencies in the task edit screen
 
-### Large Projects:
+3. **Team member doesn't appear in assignment list**:
+   - Verify the team member has been properly added to the system
 
-- Large projects with many tasks and dependencies may take longer to export/import
-- A progress indicator will show during the import process
-
-## Best Practices
-
-1. **Regular backups**: Export important projects regularly to prevent data loss
-2. **Version naming**: Use descriptive names for different versions of your projects (e.g., "Robot Arm 2025 - Planning Phase")
-3. **Template sharing**: Create template projects with common subsystems and export them for reuse
-4. **Documentation**: Note what changes were made between different exported versions
-
-## Technical Details
-
-- Project files are in JSON format and can be viewed in any text editor
-- Files contain a "format_version" field to track compatibility
-- The import process uses transactions to ensure all-or-nothing imports
-- Project relationships (like task dependencies) are preserved during import/export
+For additional support, contact your system administrator or refer to the developer documentation.

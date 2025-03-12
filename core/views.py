@@ -4,8 +4,8 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms import modelformset_factory
-from .models import Project
-from .forms import ProjectForm, MeetingForm, AttendanceForm
+from .models import Project, Subteam, Task, Meeting, Attendance, TeamMember, Component, Milestone, Subsystem
+from .forms import ProjectForm, SubteamForm, TaskForm, MeetingForm, AttendanceForm, TeamMemberForm
 from django.http import HttpResponse, JsonResponse
 from .models import Subteam, Task, Meeting, Attendance, TeamMember
 from django.shortcuts import render, redirect, get_object_or_404
@@ -19,6 +19,7 @@ import svgwrite
 import markdown
 import json
 import os
+import datetime
 
 
 # Dashboard
@@ -45,6 +46,7 @@ def project_create(request):
         form = ProjectForm()
     
     return render(request, 'core/project_form.html', {'form': form, 'title': 'Create New Project'})
+
 
 @login_required
 def project_detail(request, project_id):
@@ -118,7 +120,7 @@ def project_save(request, project_id):
         'components': json.loads(serializers.serialize('json', components)),
         'team_members': json.loads(serializers.serialize('json', team_members)),
         'subteams': json.loads(serializers.serialize('json', subteams)),
-        'export_date': datetime.now().isoformat(),
+        'export_date': datetime.datetime.now().isoformat(),
         'format_version': '1.0'
     }
     
@@ -832,6 +834,8 @@ def member_edit(request, member_id):
     return render(request, 'core/member_form.html', {'form': form, 'member': member, 'title': 'Edit Team Member'})
 
 
+# Documentation view
+@login_required
 def documentation_view(request, doc_name):
     """
     View to render documentation files from Markdown to HTML
@@ -854,9 +858,322 @@ def documentation_view(request, doc_name):
             lines = md_content.split('\n')
             if lines and lines[0].startswith('# '):
                 title = lines[0][2:]
+    else:
+        # If the file doesn't exist but we're in development mode,
+        # generate placeholder documentation
+        if settings.DEBUG:
+            if doc_name == 'user_guide':
+                content = markdown.markdown("""
+# FRC Project Management System User Guide
+
+This is placeholder content for the user guide. The actual documentation file 
+should be placed at `static/docs/user_guide.md`.
+
+## Key Features
+
+- Project management
+- Task tracking
+- Team organization
+- Gantt chart visualization
+- Meeting attendance
+
+## Project Export/Import
+
+The system allows you to export projects to files and import them back, which is
+useful for:
+
+- Creating backups of your projects
+- Sharing project templates with other teams
+- Version control for complex projects
+
+To export a project, navigate to the project detail page and click "Save to File".
+To import a project, go to the projects list and click "Import Project".
+                """)
+                title = "User Guide"
+            elif doc_name == 'developer_guide':
+                content = markdown.markdown("""
+# FRC Project Management System Developer Guide
+
+This is placeholder content for the developer guide. The actual documentation file 
+should be placed at `static/docs/developer_guide.md`.
+
+## Technical Overview
+
+- Django-based web application
+- Bootstrap for UI
+- Project export/import functionality
+- Testing with Django's test framework
+
+## Project Persistence
+
+The project persistence feature allows exporting projects to JSON files and importing
+them back. The implementation is in `views.py` in the `project_save` and `project_load`
+functions. The export creates a JSON representation of a project and all its related
+entities, while the import recreates the project from the JSON file.
+
+Tests for this functionality are in the `ProjectPersistenceTests` class in `tests.py`.
+                """)
+                title = "Developer Guide"
     
     return render(request, 'core/documentation.html', {
         'content': content,
         'title': title,
         'doc_name': doc_name
     })
+            
+    try:
+        project_file = request.FILES['project_file']
+        
+        # Check if file is empty
+        if project_file.size == 0:
+            return render(request, 'core/import_error.html', {
+                'error_message': 'The uploaded file is empty.',
+                'technical_details': 'File has zero bytes.'
+            })
+            
+        # Read and parse JSON
+        try:
+            project_data = json.loads(project_file.read().decode('utf-8'))
+        except json.JSONDecodeError as e:
+            return render(request, 'core/import_error.html', {
+                'error_message': 'Invalid JSON format. The file may be corrupted or not a proper JSON file.',
+                'technical_details': str(e)
+            })
+        
+        # Validate the format
+        if 'format_version' not in project_data or 'project' not in project_data:
+            return render(request, 'core/import_error.html', {
+                'error_message': 'Invalid project file format. The file may be corrupted or not a valid project export.',
+                'technical_details': 'Missing required format_version or project data.'
+            })
+        
+        rename_duplicates = request.POST.get('rename_duplicates', False) == 'on'
+        
+        with transaction.atomic():
+            # Import project
+            project_import = project_data['project']
+            project_fields = project_import['fields']
+            
+            # Check for duplicate project name
+            project_name = project_fields['name']
+            if Project.objects.filter(name=project_name).exists():
+                if not rename_duplicates:
+                    return render(request, 'core/import_error.html', {
+                        'error_message': f'A project with the name "{project_name}" already exists.',
+                        'technical_details': 'Set the "rename duplicates" option to automatically rename the imported project.'
+                    })
+                
+                original_name = project_name
+                counter = 1
+                while Project.objects.filter(name=project_name).exists():
+                    project_name = f"{original_name} (Import {counter})"
+                    counter += 1
+                project_fields['name'] = project_name
+            
+            # Create new project
+            new_project = Project.objects.create(
+                name=project_fields['name'],
+                description=project_fields.get('description', ''),
+                start_date=project_fields['start_date'],
+                goal_end_date=project_fields['goal_end_date'],
+                hard_deadline=project_fields['hard_deadline']
+            )
+            
+            # Mapping dictionaries to keep track of old IDs to new IDs
+            subteam_map = {}
+            subsystem_map = {}
+            component_map = {}
+            member_map = {}
+            task_map = {}
+            
+            # Import subteams first
+            for subteam_import in project_data.get('subteams', []):
+                subteam_fields = subteam_import['fields']
+                # Check if subteam already exists by name
+                existing_subteam = Subteam.objects.filter(name=subteam_fields['name']).first()
+                if existing_subteam:
+                    subteam_map[subteam_import['pk']] = existing_subteam.id
+                else:
+                    new_subteam = Subteam.objects.create(
+                        name=subteam_fields['name'],
+                        color_code=subteam_fields['color_code'],
+                        specialties=subteam_fields.get('specialties', '')
+                    )
+                    subteam_map[subteam_import['pk']] = new_subteam.id
+            
+            # Import components
+            for component_import in project_data.get('components', []):
+                component_fields = component_import['fields']
+                # Check if component already exists by name and part number
+                existing_component = Component.objects.filter(
+                    name=component_fields['name'],
+                    part_number=component_fields.get('part_number', '')
+                ).first()
+                if existing_component:
+                    component_map[component_import['pk']] = existing_component.id
+                else:
+                    new_component = Component.objects.create(
+                        name=component_fields['name'],
+                        part_number=component_fields.get('part_number', ''),
+                        description=component_fields.get('description', ''),
+                        expected_delivery=component_fields.get('expected_delivery'),
+                        actual_delivery=component_fields.get('actual_delivery'),
+                        is_delivered=component_fields.get('is_delivered', False)
+                    )
+                    component_map[component_import['pk']] = new_component.id
+            
+            # Import subsystems
+            for subsystem_import in project_data.get('subsystems', []):
+                subsystem_fields = subsystem_import['fields']
+                
+                # Map subteam if exists
+                responsible_subteam_id = None
+                if subsystem_fields.get('responsible_subteam'):
+                    responsible_subteam_id = subteam_map.get(subsystem_fields['responsible_subteam'])
+                
+                # Check if subsystem already exists by name
+                existing_subsystem = Subsystem.objects.filter(name=subsystem_fields['name']).first()
+                if existing_subsystem:
+                    subsystem_map[subsystem_import['pk']] = existing_subsystem.id
+                else:
+                    new_subsystem = Subsystem.objects.create(
+                        name=subsystem_fields['name'],
+                        description=subsystem_fields.get('description', ''),
+                        status=subsystem_fields.get('status', 'not_started'),
+                        responsible_subteam_id=responsible_subteam_id
+                    )
+                    subsystem_map[subsystem_import['pk']] = new_subsystem.id
+            
+            # Import team members (Note: requires existing User objects)
+            # In practice, we would match on username or create new users
+            for member_import in project_data.get('team_members', []):
+                member_fields = member_import['fields']
+                
+                # Try to find the existing user
+                user = None
+                try:
+                    user = User.objects.get(id=member_fields['user'])
+                except ObjectDoesNotExist:
+                    # Skip this member if the user doesn't exist
+                    continue
+                
+                # Map subteam if exists
+                subteam_id = None
+                if member_fields.get('subteam'):
+                    subteam_id = subteam_map.get(member_fields['subteam'])
+                
+                # Check if member already exists
+                existing_member = TeamMember.objects.filter(user=user).first()
+                if existing_member:
+                    member_map[member_import['pk']] = existing_member.id
+                else:
+                    new_member = TeamMember.objects.create(
+                        user=user,
+                        subteam_id=subteam_id,
+                        phone=member_fields.get('phone', ''),
+                        skills=member_fields.get('skills', ''),
+                        is_leader=member_fields.get('is_leader', False)
+                    )
+                    member_map[member_import['pk']] = new_member.id
+            
+            # Import milestones
+            for milestone_import in project_data.get('milestones', []):
+                milestone_fields = milestone_import['fields']
+                Milestone.objects.create(
+                    project=new_project,
+                    name=milestone_fields['name'],
+                    description=milestone_fields.get('description', ''),
+                    date=milestone_fields['date']
+                )
+            
+            # Import meetings
+            meeting_map = {}
+            for meeting_import in project_data.get('meetings', []):
+                meeting_fields = meeting_import['fields']
+                new_meeting = Meeting.objects.create(
+                    project=new_project,
+                    date=meeting_fields['date'],
+                    start_time=meeting_fields['start_time'],
+                    end_time=meeting_fields['end_time'],
+                    notes=meeting_fields.get('notes', '')
+                )
+                meeting_map[meeting_import['pk']] = new_meeting.id
+            
+            # Import tasks
+            for task_import in project_data.get('tasks', []):
+                task_fields = task_import['fields']
+                
+                # Map subsystem
+                subsystem_id = subsystem_map.get(task_fields['subsystem'])
+                if not subsystem_id:
+                    # Skip task if subsystem is missing
+                    continue
+                
+                # Create task
+                new_task = Task.objects.create(
+                    project=new_project,
+                    title=task_fields['title'],
+                    description=task_fields.get('description', ''),
+                    estimated_duration=task_fields['estimated_duration'],
+                    actual_duration=task_fields.get('actual_duration'),
+                    priority=task_fields.get('priority', 2),
+                    progress=task_fields.get('progress', 0),
+                    start_date=task_fields.get('start_date'),
+                    end_date=task_fields.get('end_date'),
+                    completed=task_fields.get('completed', False),
+                    subsystem_id=subsystem_id
+                )
+                task_map[task_import['pk']] = new_task.id
+            
+            # Add task relations
+            task_relations = project_data.get('task_relations', {})
+            for old_task_id, relations in task_relations.items():
+                if old_task_id not in task_map:
+                    continue
+                
+                task = Task.objects.get(id=task_map[int(old_task_id)])
+                
+                # Add pre_dependencies
+                for dep_id in relations.get('pre_dependencies', []):
+                    if dep_id in task_map:
+                        task.pre_dependencies.add(Task.objects.get(id=task_map[dep_id]))
+                
+                # Add required_components
+                for comp_id in relations.get('required_components', []):
+                    if comp_id in component_map:
+                        task.required_components.add(Component.objects.get(id=component_map[comp_id]))
+                
+                # Add assigned team members
+                for member_id in relations.get('assigned_to', []):
+                    if member_id in member_map:
+                        task.assigned_to.add(TeamMember.objects.get(id=member_map[member_id]))
+            
+            # Import attendance records
+            for attendance_import in project_data.get('attendance', []):
+                attendance_fields = attendance_import['fields']
+                
+                # Map meeting and member
+                meeting_id = meeting_map.get(attendance_fields['meeting'])
+                member_id = member_map.get(attendance_fields['member'])
+                
+                if not meeting_id or not member_id:
+                    continue
+                
+                Attendance.objects.create(
+                    meeting_id=meeting_id,
+                    member_id=member_id,
+                    present=attendance_fields.get('present', False),
+                    arrival_time=attendance_fields.get('arrival_time'),
+                    departure_time=attendance_fields.get('departure_time')
+                )
+        
+        messages.success(request, f'Project "{new_project.name}" imported successfully!')
+        return redirect('core:project_detail', project_id=new_project.id)
+        
+    except Exception as e:
+        return render(request, 'core/import_error.html', {
+            'error_message': f'Error importing project: {str(e)}',
+            'technical_details': str(e)
+        })
+    
+    return render(request, 'core/project_load.html')
