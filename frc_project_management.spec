@@ -1,17 +1,7 @@
+
 # -*- mode: python ; coding: utf-8 -*-
-from PyInstaller.utils.hooks import collect_data_files, collect_submodules
 
 block_cipher = None
-
-# Collect Django data files
-django_data = collect_data_files('django')
-
-# Collect all submodules from Django and other packages
-django_submodules = collect_submodules('django')
-widget_tweaks_submodules = collect_submodules('widget_tweaks')
-
-# Add all necessary Python modules
-added_modules = django_submodules + widget_tweaks_submodules
 
 a = Analysis(
     ['run_app.py'],
@@ -20,22 +10,29 @@ a = Analysis(
     datas=[
         ('core/templates', 'core/templates'),
         ('static', 'static'),
-        # Include Django and other package data files
-        *django_data,
     ],
-    hiddenimports=added_modules + [
+    hiddenimports=[
         'django.template.defaulttags',
         'django.template.defaultfilters',
         'django.template.loader_tags',
         'django.templatetags.static',
+        'django.contrib.admin.apps',
+        'django.contrib.auth.apps',
+        'django.contrib.contenttypes.apps',
+        'django.contrib.sessions.apps',
+        'django.contrib.messages.apps',
+        'django.contrib.staticfiles.apps',
+        'widget_tweaks',
+        'widget_tweaks.templatetags.widget_tweaks',
         'svgwrite',
         'markdown',
-        'widget_tweaks.templatetags.widget_tweaks',
     ],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=[],
+    excludes=[
+        'django.contrib.gis',  # Exclude GIS which is causing warnings
+    ],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
     cipher=block_cipher,
@@ -64,5 +61,4 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    #icon='static/favicon.ico',  # Add an icon if you have one
 )
