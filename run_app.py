@@ -9,9 +9,19 @@ if getattr(sys, 'frozen', False):
     BASE_DIR = os.path.dirname(sys.executable)
     # Add BASE_DIR to path so Python can find your modules
     sys.path.insert(0, BASE_DIR)
+    
+    # Print to aid in debugging
+    print(f"Running in frozen mode. BASE_DIR: {BASE_DIR}")
+    
+    # Also print the available directories/files to help debug
+    print("\nAvailable directories and files:")
+    for root, dirs, files in os.walk(BASE_DIR, topdown=False, maxdepth=2):
+        for name in dirs:
+            print(os.path.join(root, name))
 else:
     # In development
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    print(f"Running in development mode. BASE_DIR: {BASE_DIR}")
 
 # Set Django settings module
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'frc_project_management.settings')
