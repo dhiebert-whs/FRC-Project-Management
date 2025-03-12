@@ -1,0 +1,29 @@
+.documentation-content h1,
+.documentation-content h2,
+.documentation-content h3,
+.documentation-content h4 {
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.documentation-content h1 {
+    font-size: 2rem;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 0.5rem;
+}
+
+.documentation-content h2 {
+    font-size: 1.5rem;
+}
+
+.documentation-content pre {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.25rem;
+}
+
+.documentation-content code {
+    background-color: #f8f9fa;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+}

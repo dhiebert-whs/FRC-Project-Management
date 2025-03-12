@@ -47,4 +47,7 @@ urlpatterns = [
     path('projects/<int:project_id>/meetings/new/', views.meeting_create, name='meeting_create'),
     path('projects/<int:project_id>/meetings/<int:meeting_id>/', views.meeting_detail, name='meeting_detail'),
     path('projects/<int:project_id>/meetings/<int:meeting_id>/attendance/', views.attendance_record, name='attendance_record'),
+
+    # Documentation
+    path('documentation/<str:doc_name>/', views.documentation_view, name='documentation'),
 ]

@@ -1,0 +1,42 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ title }} - FRC Project Management{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-3">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Documentation</h5>
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item {% if doc_name == 'user_guide' %}active{% endif %}">
+                        <a href="{% url 'core:documentation' 'user_guide' %}" class="{% if doc_name == 'user_guide' %}text-white{% endif %}">
+                            User Guide
+                        </a>
+                    </li>
+                    <li class="list-group-item {% if doc_name == 'developer_guide' %}active{% endif %}">
+                        <a href="{% url 'core:documentation' 'developer_guide' %}" class="{% if doc_name == 'developer_guide' %}text-white{% endif %}">
+                            Developer Guide
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-9">
+        <div class="card">
+            <div class="card-header">
+                <h2>{{ title }}</h2>
+            </div>
+            <div class="card-body">
+                <div class="documentation-content">
+                    {{ content|safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
