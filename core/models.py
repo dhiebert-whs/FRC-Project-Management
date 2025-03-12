@@ -40,7 +40,7 @@ class Subsystem(models.Model):
         return self.name
 
 class Project(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=100)
     start_date = models.DateField()
     goal_end_date = models.DateField()
     hard_deadline = models.DateField()
