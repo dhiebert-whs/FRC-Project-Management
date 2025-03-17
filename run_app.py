@@ -1,8 +1,3 @@
-import os
-import sys
-import waitress
-from django.core.wsgi import get_wsgi_application
-
 # Ensure proper path handling for both development and frozen environments
 if getattr(sys, 'frozen', False):
     # When running as compiled exe
@@ -15,9 +10,10 @@ if getattr(sys, 'frozen', False):
     
     # Also print the available directories/files to help debug
     print("\nAvailable directories and files:")
-    for root, dirs, files in os.walk(BASE_DIR, topdown=False, maxdepth=2):
+    for root, dirs, files in os.walk(BASE_DIR, topdown=False):
         for name in dirs:
-            print(os.path.join(root, name))
+            if "templates" in name:
+                print(os.path.join(root, name))
 else:
     # In development
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
