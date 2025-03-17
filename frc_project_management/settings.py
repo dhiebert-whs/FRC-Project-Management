@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
-#from pathlib import Path
+from pathlib import Path
 import os
 import sys
 
@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core', 
-    'widget_tweaks',
+    'django_widget_tweaks',
 ]
 
 MIDDLEWARE = [
@@ -63,7 +63,9 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-                    os.path.join(BASE_DIR, 'core', 'templates'),    
+                    os.path.join(BASE_DIR, 'core', 'templates'),
+                    # Explicitly add the registration templates directory
+                    os.path.join(BASE_DIR, 'core', 'templates', 'registration'),  
                 ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -72,6 +74,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'core.context_processors.version_context',
             ],
         },
     },
@@ -146,3 +149,20 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Media files (for uploads)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Authentication settings
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
+
+
+# For development - you would configure email settings in production
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Include version information in the settings
+from core.version import VERSION, VERSION_NAME
+
+# Make version info accessible throughout the application
+VERSION_INFO = {
+    'version': VERSION,
+    'name': VERSION_NAME,
+}

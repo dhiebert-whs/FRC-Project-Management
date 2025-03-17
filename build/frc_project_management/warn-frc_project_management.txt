@@ -79,7 +79,7 @@ missing module named markdown.blockparsers - imported by markdown.extensions.abb
 missing module named importlib_metadata - imported by markdown.util (delayed, conditional)
 missing module named selenium - imported by django.test.selenium (delayed, conditional)
 missing module named tblib - imported by django.test.runner (optional)
-missing module named readline - imported by cmd (delayed, conditional, optional), pstats (conditional, optional), code (delayed, conditional, optional), django.core.management.commands.shell (delayed, optional), rlcompleter (optional), pdb (delayed, optional)
+missing module named readline - imported by code (delayed, conditional, optional), django.core.management.commands.shell (delayed, optional), rlcompleter (optional), cmd (delayed, conditional, optional), pdb (delayed, optional)
 missing module named ipdb - imported by django.test.runner (optional)
 missing module named yaml - imported by django.core.serializers.pyyaml (top-level)
 missing module named bpython - imported by django.core.management.commands.shell (delayed)

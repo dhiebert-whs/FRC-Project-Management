@@ -1,4 +1,3 @@
-
 # -*- mode: python ; coding: utf-8 -*-
 
 block_cipher = None
@@ -10,30 +9,26 @@ a = Analysis(
     datas=[
         ('core/templates', 'core/templates'),
         ('static', 'static'),
+        # Explicitly include authentication templates
         ('core/templates/registration', 'core/templates/registration'),
     ],
     hiddenimports=[
-        'django.template.defaulttags',
-        'django.template.defaultfilters',
-        'django.template.loader_tags',
-        'django.templatetags.static',
-        'django.contrib.admin.apps',
-        'django.contrib.auth.apps',
-        'django.contrib.contenttypes.apps',
-        'django.contrib.sessions.apps',
-        'django.contrib.messages.apps',
-        'django.contrib.staticfiles.apps',
-        'widget_tweaks',
-        'widget_tweaks.templatetags.widget_tweaks',
-        'svgwrite',
-        'markdown',
+        'django.contrib.admin',
+        'django.contrib.auth',
+        'django.contrib.contenttypes',
+        'django.contrib.sessions',
+        'django.contrib.messages',
+        'django.contrib.staticfiles',
+        'django_widget_tweaks',
+        'core',
+        'core.version',          # Include version module
+        'core.context_processors', # Include context processors
+        'initialize',            # Include initialization script
     ],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=[
-        'django.contrib.gis',  # Exclude GIS which is causing warnings
-    ],
+    excludes=[],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
     cipher=block_cipher,
@@ -45,21 +40,29 @@ pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 exe = EXE(
     pyz,
     a.scripts,
-    a.binaries,
-    a.zipfiles,
-    a.datas,
     [],
+    exclude_binaries=True,
     name='FRC_Project_Management',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
-    upx_exclude=[],
-    runtime_tmpdir=None,
     console=True,
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon='static/img/logo.ico',  # Add your logo if available
+)
+
+coll = COLLECT(
+    exe,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    name='FRC_Project_Management',
 )
