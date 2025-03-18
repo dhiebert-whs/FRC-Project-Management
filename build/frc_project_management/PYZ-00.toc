@@ -272,6 +272,10 @@
    'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
    'Management\\core\\apps.py',
    'PYMODULE'),
+  ('core.context_processors',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\core\\context_processors.py',
+   'PYMODULE'),
   ('core.forms',
    'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
    'Management\\core\\forms.py',
@@ -300,6 +304,10 @@
    'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
    'Management\\core\\urls.py',
    'PYMODULE'),
+  ('core.version',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\core\\version.py',
+   'PYMODULE'),
   ('core.views',
    'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
    'Management\\core\\views.py',
@@ -312,9 +320,33 @@
    'C:\\Program '
    'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\\Lib\\ctypes\\__init__.py',
    'PYMODULE'),
+  ('ctypes._aix',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\\Lib\\ctypes\\_aix.py',
+   'PYMODULE'),
   ('ctypes._endian',
    'C:\\Program '
    'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\\Lib\\ctypes\\_endian.py',
+   'PYMODULE'),
+  ('ctypes.macholib',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\\Lib\\ctypes\\macholib\\__init__.py',
+   'PYMODULE'),
+  ('ctypes.macholib.dyld',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\\Lib\\ctypes\\macholib\\dyld.py',
+   'PYMODULE'),
+  ('ctypes.macholib.dylib',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\\Lib\\ctypes\\macholib\\dylib.py',
+   'PYMODULE'),
+  ('ctypes.macholib.framework',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\\Lib\\ctypes\\macholib\\framework.py',
+   'PYMODULE'),
+  ('ctypes.util',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\\Lib\\ctypes\\util.py',
    'PYMODULE'),
   ('ctypes.wintypes',
    'C:\\Program '
@@ -1463,6 +1495,490 @@
   ('django.contrib.flatpages.views',
    'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
    'Management\\venv\\Lib\\site-packages\\django\\contrib\\flatpages\\views.py',
+   'PYMODULE'),
+  ('django.contrib.gis',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\__init__.py',
+   'PYMODULE'),
+  ('django.contrib.gis.apps',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\apps.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\__init__.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\__init__.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.base',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\base\\__init__.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.base.adapter',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\base\\adapter.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.base.features',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\base\\features.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.base.models',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\base\\models.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.base.operations',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\base\\operations.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.mysql',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\mysql\\__init__.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.mysql.base',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\mysql\\base.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.mysql.features',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\mysql\\features.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.mysql.introspection',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\mysql\\introspection.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.mysql.operations',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\mysql\\operations.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.mysql.schema',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\mysql\\schema.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.oracle',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\oracle\\__init__.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.oracle.adapter',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\oracle\\adapter.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.oracle.base',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\oracle\\base.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.oracle.features',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\oracle\\features.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.oracle.introspection',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\oracle\\introspection.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.oracle.models',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\oracle\\models.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.oracle.operations',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\oracle\\operations.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.oracle.schema',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\oracle\\schema.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.postgis',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\postgis\\__init__.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.postgis.adapter',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\postgis\\adapter.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.postgis.base',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\postgis\\base.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.postgis.const',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\postgis\\const.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.postgis.features',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\postgis\\features.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.postgis.introspection',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\postgis\\introspection.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.postgis.models',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\postgis\\models.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.postgis.operations',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\postgis\\operations.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.postgis.pgraster',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\postgis\\pgraster.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.postgis.schema',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\postgis\\schema.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.spatialite',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\spatialite\\__init__.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.spatialite.adapter',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\spatialite\\adapter.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.spatialite.base',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\spatialite\\base.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.spatialite.client',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\spatialite\\client.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.spatialite.features',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\spatialite\\features.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.spatialite.introspection',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\spatialite\\introspection.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.spatialite.models',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\spatialite\\models.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.spatialite.operations',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\spatialite\\operations.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.spatialite.schema',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\spatialite\\schema.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.backends.utils',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\backends\\utils.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.models',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\models\\__init__.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.models.aggregates',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\models\\aggregates.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.models.fields',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\models\\fields.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.models.functions',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\models\\functions.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.models.lookups',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\models\\lookups.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.models.proxy',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\models\\proxy.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.models.sql',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\models\\sql\\__init__.py',
+   'PYMODULE'),
+  ('django.contrib.gis.db.models.sql.conversion',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\db\\models\\sql\\conversion.py',
+   'PYMODULE'),
+  ('django.contrib.gis.feeds',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\feeds.py',
+   'PYMODULE'),
+  ('django.contrib.gis.forms',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\forms\\__init__.py',
+   'PYMODULE'),
+  ('django.contrib.gis.forms.fields',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\forms\\fields.py',
+   'PYMODULE'),
+  ('django.contrib.gis.forms.widgets',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\forms\\widgets.py',
+   'PYMODULE'),
+  ('django.contrib.gis.gdal',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\gdal\\__init__.py',
+   'PYMODULE'),
+  ('django.contrib.gis.gdal.base',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\gdal\\base.py',
+   'PYMODULE'),
+  ('django.contrib.gis.gdal.datasource',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\gdal\\datasource.py',
+   'PYMODULE'),
+  ('django.contrib.gis.gdal.driver',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\gdal\\driver.py',
+   'PYMODULE'),
+  ('django.contrib.gis.gdal.envelope',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\gdal\\envelope.py',
+   'PYMODULE'),
+  ('django.contrib.gis.gdal.error',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\gdal\\error.py',
+   'PYMODULE'),
+  ('django.contrib.gis.gdal.feature',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\gdal\\feature.py',
+   'PYMODULE'),
+  ('django.contrib.gis.gdal.field',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\gdal\\field.py',
+   'PYMODULE'),
+  ('django.contrib.gis.gdal.geometries',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\gdal\\geometries.py',
+   'PYMODULE'),
+  ('django.contrib.gis.gdal.geomtype',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\gdal\\geomtype.py',
+   'PYMODULE'),
+  ('django.contrib.gis.gdal.layer',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\gdal\\layer.py',
+   'PYMODULE'),
+  ('django.contrib.gis.gdal.libgdal',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\gdal\\libgdal.py',
+   'PYMODULE'),
+  ('django.contrib.gis.gdal.prototypes',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\gdal\\prototypes\\__init__.py',
+   'PYMODULE'),
+  ('django.contrib.gis.gdal.prototypes.ds',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\gdal\\prototypes\\ds.py',
+   'PYMODULE'),
+  ('django.contrib.gis.gdal.prototypes.errcheck',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\gdal\\prototypes\\errcheck.py',
+   'PYMODULE'),
+  ('django.contrib.gis.gdal.prototypes.generation',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\gdal\\prototypes\\generation.py',
+   'PYMODULE'),
+  ('django.contrib.gis.gdal.prototypes.geom',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\gdal\\prototypes\\geom.py',
+   'PYMODULE'),
+  ('django.contrib.gis.gdal.prototypes.raster',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\gdal\\prototypes\\raster.py',
+   'PYMODULE'),
+  ('django.contrib.gis.gdal.prototypes.srs',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\gdal\\prototypes\\srs.py',
+   'PYMODULE'),
+  ('django.contrib.gis.gdal.raster',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\gdal\\raster\\__init__.py',
+   'PYMODULE'),
+  ('django.contrib.gis.gdal.raster.band',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\gdal\\raster\\band.py',
+   'PYMODULE'),
+  ('django.contrib.gis.gdal.raster.base',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\gdal\\raster\\base.py',
+   'PYMODULE'),
+  ('django.contrib.gis.gdal.raster.const',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\gdal\\raster\\const.py',
+   'PYMODULE'),
+  ('django.contrib.gis.gdal.raster.source',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\gdal\\raster\\source.py',
+   'PYMODULE'),
+  ('django.contrib.gis.gdal.srs',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\gdal\\srs.py',
+   'PYMODULE'),
+  ('django.contrib.gis.geoip2',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\geoip2.py',
+   'PYMODULE'),
+  ('django.contrib.gis.geometry',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\geometry.py',
+   'PYMODULE'),
+  ('django.contrib.gis.geos',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\geos\\__init__.py',
+   'PYMODULE'),
+  ('django.contrib.gis.geos.base',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\geos\\base.py',
+   'PYMODULE'),
+  ('django.contrib.gis.geos.collections',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\geos\\collections.py',
+   'PYMODULE'),
+  ('django.contrib.gis.geos.coordseq',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\geos\\coordseq.py',
+   'PYMODULE'),
+  ('django.contrib.gis.geos.error',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\geos\\error.py',
+   'PYMODULE'),
+  ('django.contrib.gis.geos.factory',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\geos\\factory.py',
+   'PYMODULE'),
+  ('django.contrib.gis.geos.geometry',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\geos\\geometry.py',
+   'PYMODULE'),
+  ('django.contrib.gis.geos.io',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\geos\\io.py',
+   'PYMODULE'),
+  ('django.contrib.gis.geos.libgeos',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\geos\\libgeos.py',
+   'PYMODULE'),
+  ('django.contrib.gis.geos.linestring',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\geos\\linestring.py',
+   'PYMODULE'),
+  ('django.contrib.gis.geos.mutable_list',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\geos\\mutable_list.py',
+   'PYMODULE'),
+  ('django.contrib.gis.geos.point',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\geos\\point.py',
+   'PYMODULE'),
+  ('django.contrib.gis.geos.polygon',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\geos\\polygon.py',
+   'PYMODULE'),
+  ('django.contrib.gis.geos.prepared',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\geos\\prepared.py',
+   'PYMODULE'),
+  ('django.contrib.gis.geos.prototypes',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\geos\\prototypes\\__init__.py',
+   'PYMODULE'),
+  ('django.contrib.gis.geos.prototypes.coordseq',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\geos\\prototypes\\coordseq.py',
+   'PYMODULE'),
+  ('django.contrib.gis.geos.prototypes.errcheck',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\geos\\prototypes\\errcheck.py',
+   'PYMODULE'),
+  ('django.contrib.gis.geos.prototypes.geom',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\geos\\prototypes\\geom.py',
+   'PYMODULE'),
+  ('django.contrib.gis.geos.prototypes.io',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\geos\\prototypes\\io.py',
+   'PYMODULE'),
+  ('django.contrib.gis.geos.prototypes.misc',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\geos\\prototypes\\misc.py',
+   'PYMODULE'),
+  ('django.contrib.gis.geos.prototypes.predicates',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\geos\\prototypes\\predicates.py',
+   'PYMODULE'),
+  ('django.contrib.gis.geos.prototypes.prepared',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\geos\\prototypes\\prepared.py',
+   'PYMODULE'),
+  ('django.contrib.gis.geos.prototypes.threadsafe',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\geos\\prototypes\\threadsafe.py',
+   'PYMODULE'),
+  ('django.contrib.gis.geos.prototypes.topology',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\geos\\prototypes\\topology.py',
+   'PYMODULE'),
+  ('django.contrib.gis.management',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\management\\__init__.py',
+   'PYMODULE'),
+  ('django.contrib.gis.management.commands',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\management\\commands\\__init__.py',
+   'PYMODULE'),
+  ('django.contrib.gis.management.commands.inspectdb',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\management\\commands\\inspectdb.py',
+   'PYMODULE'),
+  ('django.contrib.gis.management.commands.ogrinspect',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\management\\commands\\ogrinspect.py',
+   'PYMODULE'),
+  ('django.contrib.gis.measure',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\measure.py',
+   'PYMODULE'),
+  ('django.contrib.gis.ptr',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\ptr.py',
+   'PYMODULE'),
+  ('django.contrib.gis.serializers',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\serializers\\__init__.py',
+   'PYMODULE'),
+  ('django.contrib.gis.serializers.geojson',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\serializers\\geojson.py',
+   'PYMODULE'),
+  ('django.contrib.gis.shortcuts',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\shortcuts.py',
+   'PYMODULE'),
+  ('django.contrib.gis.utils',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\utils\\__init__.py',
+   'PYMODULE'),
+  ('django.contrib.gis.utils.layermapping',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\utils\\layermapping.py',
+   'PYMODULE'),
+  ('django.contrib.gis.utils.ogrinfo',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\utils\\ogrinfo.py',
+   'PYMODULE'),
+  ('django.contrib.gis.utils.ogrinspect',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\utils\\ogrinspect.py',
+   'PYMODULE'),
+  ('django.contrib.gis.utils.srs',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\utils\\srs.py',
+   'PYMODULE'),
+  ('django.contrib.gis.views',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\django\\contrib\\gis\\views.py',
    'PYMODULE'),
   ('django.contrib.humanize',
    'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
@@ -3643,6 +4159,10 @@
   ('importlib.util',
    'C:\\Program '
    'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\\Lib\\importlib\\util.py',
+   'PYMODULE'),
+  ('initialize',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\initialize.py',
    'PYMODULE'),
   ('inspect',
    'C:\\Program '
