@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}FRC Project Management{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'core:dashboard' %}">FRC Project Management</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'core:dashboard' %}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'core:project_list' %}">Projects</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'core:subteam_list' %}">Subteams</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'core:member_list' %}">Team Members</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="docsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Documentation
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="docsDropdown">
+                            <li><a class="dropdown-item" href="{% url 'core:documentation' 'user_guide' %}">User Guide</a></li>
+                            <li><a class="dropdown-item" href="{% url 'core:documentation' 'developer_guide' %}">Developer Guide</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <span class="nav-link">Hello, {{ user.username }}</span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Login</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+     <!-- Project Import/Export Progress JS -->
+     <script>
+        // Project import/export progress handling
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle project import form submission
+            const importForm = document.getElementById('projectImportForm');
+            const importButton = document.getElementById('importButton');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+            const progressStatus = document.getElementById('progressStatus');
+            
+            if (importForm) {
+                importForm.addEventListener('submit', function(e) {
+                    // Show progress UI
+                    progressContainer.classList.remove('d-none');
+                    importButton.disabled = true;
+                    
+                    // Set initial status
+                    progressStatus.textContent = 'Uploading file...';
+                    progressBar.style.width = '10%';
+                    progressBar.setAttribute('aria-valuenow', 10);
+                    
+                    // We'll simulate progress since we can't get real-time updates from the server
+                    let progress = 10;
+                    const interval = setInterval(function() {
+                        progress += 5;
+                        if (progress > 90) {
+                            clearInterval(interval);
+                            progress = 90;
+                            progressStatus.textContent = 'Processing import...';
+                        }
+                        
+                        progressBar.style.width = progress + '%';
+                        progressBar.setAttribute('aria-valuenow', progress);
+                    }, 500);
+                    
+                    // Let the form submit normally
+                });
+            }
+            
+            // Handle project export button click
+            const exportButtons = document.querySelectorAll('.export-project-btn');
+            
+            exportButtons.forEach(function(button) {
+                button.addEventListener('click', function(e) {
+                    // Show a mini loading indicator in the button
+                    const originalText = button.innerHTML;
+                    button.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Exporting...';
+                    button.disabled = true;
+                    
+                    // Let the link navigate normally, but reset after a timeout
+                    setTimeout(function() {
+                        button.innerHTML = originalText;
+                        button.disabled = false;
+                    }, 3000);
+                });
+            });
+        });
+
+    </script>
+    {% block extra_js %}{% endblock %}
+
+    <footer class="mt-5 py-3 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="text-muted mb-0">FRC Project Management System</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <small class="text-muted">Version {{ app_version }} - {{ app_version_name }}</small>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

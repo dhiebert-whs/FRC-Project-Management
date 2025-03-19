@@ -1,0 +1,129 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Record Attendance - FRC Project Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>Record Attendance</h1>
+        <p class="text-muted">
+            Meeting: {{ meeting.date }} ({{ meeting.start_time }} - {{ meeting.end_time }})
+            | Project: <a href="{% url 'core:project_detail' project.id %}">{{ project.name }}</a>
+        </p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Team Members</h5>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Member</th>
+                            <th>Subteam</th>
+                            <th>Present</th>
+                            <th>Arrival Time</th>
+                            <th>Departure Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for member in members %}
+                            <tr>
+                                <td>
+                                    {{ member.user.get_full_name|default:member.user.username }}
+                                    {% if member.is_leader %}
+                                        <span class="badge bg-primary">Leader</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if member.subteam %}
+                                        <span class="badge rounded-pill" 
+                                              style="background-color: {{ member.subteam.color_code }}; 
+                                                     color: {% if member.subteam.color_code|lower < '#888888' %}white{% else %}black{% endif %};">
+                                            {{ member.subteam.name }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-muted">None</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input attendance-present" 
+                                               type="checkbox" 
+                                               name="present_{{ member.id }}" 
+                                               id="present_{{ member.id }}" 
+                                               data-member-id="{{ member.id }}"
+                                               {% if attendance_data.member.id and attendance_data.member.id.present %}checked{% endif %}>
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="time" 
+                                           class="form-control attendance-time" 
+                                           name="arrival_{{ member.id }}" 
+                                           id="arrival_{{ member.id }}"
+                                           value="{% if attendance_data.member.id and attendance_data.member.id.arrival_time %}{{ attendance_data.member.id.arrival_time|time:'H:i' }}{% else %}{{ meeting.start_time|time:'H:i' }}{% endif %}"
+                                           disabled>
+                                </td>
+                                <td>
+                                    <input type="time" 
+                                           class="form-control attendance-time" 
+                                           name="departure_{{ member.id }}" 
+                                           id="departure_{{ member.id }}"
+                                           value="{% if attendance_data.member.id and attendance_data.member.id.departure_time %}{{ attendance_data.member.id.departure_time|time:'H:i' }}{% endif %}"
+                                           disabled>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="d-flex justify-content-between mt-3">
+                <a href="{% url 'core:meeting_detail' project.id meeting.id %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Save Attendance</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Enable/disable time inputs based on attendance checkbox
+    document.addEventListener('DOMContentLoaded', function() {
+        const presentCheckboxes = document.querySelectorAll('.attendance-present');
+        
+        presentCheckboxes.forEach(checkbox => {
+            const memberId = checkbox.dataset.memberId;
+            const arrivalInput = document.getElementById(`arrival_${memberId}`);
+            const departureInput = document.getElementById(`departure_${memberId}`);
+            
+            // Set initial state
+            arrivalInput.disabled = !checkbox.checked;
+            departureInput.disabled = !checkbox.checked;
+            
+            // Add change event listener
+            checkbox.addEventListener('change', function() {
+                arrivalInput.disabled = !this.checked;
+                departureInput.disabled = !this.checked;
+                
+                if (this.checked) {
+                    // Set default arrival time if empty
+                    if (!arrivalInput.value) {
+                        const now = new Date();
+                        const hours = String(now.getHours()).padStart(2, '0');
+                        const minutes = String(now.getMinutes()).padStart(2, '0');
+                        arrivalInput.value = `${hours}:${minutes}`;
+                    }
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

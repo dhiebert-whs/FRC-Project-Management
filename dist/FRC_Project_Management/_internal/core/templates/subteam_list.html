@@ -1,0 +1,41 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Subteams - FRC Project Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Subteams</h1>
+    <a href="{% url 'core:subteam_create' %}" class="btn btn-primary">+ New Subteam</a>
+</div>
+
+{% if subteams %}
+    <div class="row">
+        {% for subteam in subteams %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header" style="background-color: {{ subteam.color_code }}; color: {% if subteam.color_code|lower < '#888888' %}white{% else %}black{% endif %};">
+                        <h5 class="card-title mb-0">{{ subteam.name }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            <strong>Specialties:</strong><br>
+                            {{ subteam.specialties|default:"No specialties listed" }}
+                        </p>
+                        <p class="card-text">
+                            <strong>Members:</strong> {{ subteam.members.count }}
+                        </p>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between">
+                        <a href="{% url 'core:subteam_detail' subteam.id %}" class="btn btn-info">View</a>
+                        <a href="{% url 'core:subteam_edit' subteam.id %}" class="btn btn-warning">Edit</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        No subteams available. <a href="{% url 'core:subteam_create' %}">Create a new subteam</a> to get started.
+    </div>
+{% endif %}
+{% endblock %}

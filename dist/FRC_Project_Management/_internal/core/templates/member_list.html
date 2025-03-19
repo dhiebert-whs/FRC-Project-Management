@@ -1,0 +1,57 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Team Members - FRC Project Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Team Members</h1>
+    <a href="{% url 'core:member_create' %}" class="btn btn-primary">+ Add Team Member</a>
+</div>
+
+{% if members %}
+    <div class="row">
+        {% for member in members %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header {% if member.subteam %}
+                                             style="background-color: {{ member.subteam.color_code }}; 
+                                                    color: {% if member.subteam.color_code|lower < '#888888' %}white{% else %}black{% endif %};"
+                                             {% endif %}">
+                        <h5 class="card-title mb-0">{{ member.user.get_full_name|default:member.user.username }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>
+                            <strong>Subteam:</strong> 
+                            {% if member.subteam %}
+                                <a href="{% url 'core:subteam_detail' member.subteam.id %}">{{ member.subteam.name }}</a>
+                            {% else %}
+                                Not assigned
+                            {% endif %}
+                        </p>
+                        <p>
+                            <strong>Role:</strong> 
+                            {% if member.is_leader %}
+                                <span class="badge bg-primary">Team Leader</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Team Member</span>
+                            {% endif %}
+                        </p>
+                        <p>
+                            <strong>Skills:</strong><br>
+                            {{ member.skills|default:"No skills listed" }}
+                        </p>
+                    </div>
+                    <div class="card-footer d-flex justify-content-between">
+                        <a href="{% url 'core:member_detail' member.id %}" class="btn btn-info">View</a>
+                        <a href="{% url 'core:member_edit' member.id %}" class="btn btn-warning">Edit</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        No team members available. <a href="{% url 'core:member_create' %}">Add a new team member</a> to get started.
+    </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'core/base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}{{ title }} - FRC Project Management{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                <h2>{{ title }}</h2>
+                <p class="text-muted mb-0">Project: {{ project.name }}</p>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="{{ form.date.id_for_label }}" class="form-label">{{ form.date.label }}</label>
+                            {{ form.date.errors }}
+                            {{ form.date|add_class:"form-control" }}
+                        </div>
+                        <div class="col-md-4">
+                            <label for="{{ form.start_time.id_for_label }}" class="form-label">{{ form.start_time.label }}</label>
+                            {{ form.start_time.errors }}
+                            {{ form.start_time|add_class:"form-control" }}
+                        </div>
+                        <div class="col-md-4">
+                            <label for="{{ form.end_time.id_for_label }}" class="form-label">{{ form.end_time.label }}</label>
+                            {{ form.end_time.errors }}
+                            {{ form.end_time|add_class:"form-control" }}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.notes.id_for_label }}" class="form-label">{{ form.notes.label }}</label>
+                        {{ form.notes.errors }}
+                        {{ form.notes|add_class:"form-control" }}
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'core:meeting_list' project.id %}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Save & Record Attendance</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

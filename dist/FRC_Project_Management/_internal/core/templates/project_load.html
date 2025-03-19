@@ -1,0 +1,51 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Import Project - FRC Project Management{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                <h2>Import Project</h2>
+            </div>
+            <div class="card-body">
+                <p>Upload a previously exported project file (.json) to import it into the system.</p>
+                
+                <form method="post" enctype="multipart/form-data" id="projectImportForm">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="project_file" class="form-label">Project File</label>
+                        <input type="file" class="form-control" id="project_file" name="project_file" accept=".json" required>
+                        <div class="form-text">Only .json files are supported</div>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="rename_duplicates" name="rename_duplicates" checked>
+                        <label class="form-check-label" for="rename_duplicates">
+                            Automatically rename the project if a project with the same name already exists
+                        </label>
+                    </div>
+                    
+                    <!-- Progress bar (hidden by default) -->
+                    <div id="progressContainer" class="mb-3 d-none">
+                        <label id="progressStatus" class="form-label">Uploading...</label>
+                        <div class="progress">
+                            <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" 
+                                 role="progressbar" style="width: 0%" 
+                                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        <small class="text-muted">This may take a few moments for large projects</small>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'core:project_list' %}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary" id="importButton">Import Project</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
