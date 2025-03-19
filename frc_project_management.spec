@@ -1,4 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
+import os
+
+base_dir = os.path.dirname(os.path.abspath(__file__))
 
 block_cipher = None
 
@@ -7,10 +10,13 @@ a = Analysis(
     pathex=[],
     binaries=[],
     datas=[
-        ('core/templates', 'core/templates'),
+        # ('core/templates', 'core/templates'),
+        (os.path.join(base_dir, 'core', 'templates'), 'core/templates'),
+        (os.path.join(base_dir, 'core', 'templates', 'registration'), 'core/templates/registration'),
+   
         ('static', 'static'),
         # Explicitly include authentication templates
-        ('core/templates/registration', 'core/templates/registration'),
+        # ('core/templates/registration', 'core/templates/registration'),
     ],
     hiddenimports=[
         'django.contrib.admin',

@@ -1,3 +1,9 @@
+#initialize()
+import os
+import sys
+from waitress import serve
+from django.core.wsgi import get_wsgi_application
+
 # Ensure proper path handling for both development and frozen environments
 if getattr(sys, 'frozen', False):
     # When running as compiled exe
