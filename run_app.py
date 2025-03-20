@@ -66,4 +66,5 @@ if __name__ == '__main__':
     print("\n* Access the application at: http://localhost:8000")
     print("* Press Ctrl+C to stop the server")
     
-    waitress.serve(application, host='127.0.0.1', port=8000)
+    #waitress.serve(application, host='127.0.0.1', port=8000)
+    serve(application, host='127.0.0.1', port=8000)
