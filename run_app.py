@@ -1,10 +1,8 @@
-#initialize()
 import os
 import sys
 import logging
 from pathlib import Path
 from waitress import serve
-from django.core.wsgi import get_wsgi_application
 
 # Set up logging
 logging.basicConfig(
@@ -17,28 +15,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger('frc_pm')
 
-'''
-# Ensure proper path handling for both development and frozen environments
-if getattr(sys, 'frozen', False):
-    # When running as compiled exe
-    BASE_DIR = os.path.dirname(sys.executable)
-    # Add BASE_DIR to path so Python can find your modules
-    sys.path.insert(0, BASE_DIR)
-    
-    # Print to aid in debugging
-    print(f"Running in frozen mode. BASE_DIR: {BASE_DIR}")
-    
-    # Also print the available directories/files to help debug
-    print("\nAvailable directories and files:")
-    for root, dirs, files in os.walk(BASE_DIR, topdown=False):
-        for name in dirs:
-            if "templates" in name:
-                print(os.path.join(root, name))
-else:
-    # In development
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    print(f"Running in development mode. BASE_DIR: {BASE_DIR}")
-'''
 # Configure paths for frozen app vs. development
 if getattr(sys, 'frozen', False):
     # Running in PyInstaller bundle
@@ -62,19 +38,19 @@ except Exception as e:
     logger.error(f"Error during initialization: {str(e)}")
     print(f"Error during initialization: {str(e)}")
 
-'''
-# Set Django settings module
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'frc_project_management.settings')
-
-# Initialize Django
-application = get_wsgi_application()
-
-# Run waitress server
-if __name__ == '__main__':
+# Import Django settings and start server
+try:
+    from django.core.wsgi import get_wsgi_application
+    application = get_wsgi_application()
+    
     # Import Django modules AFTER the settings are configured
     from django.core.management import call_command
     import django
     django.setup()
+    
+    from core.version import VERSION, VERSION_NAME
+    logger.info(f"FRC Project Management System v{VERSION} - {VERSION_NAME}")
+    print(f"FRC Project Management System v{VERSION} - {VERSION_NAME}")
     
     print("\n==== FRC Project Management System ====")
     print("\nChecking database...")
@@ -100,33 +76,16 @@ if __name__ == '__main__':
         print(f"Error during database setup: {str(e)}")
         print("Please run migrations manually with: python manage.py migrate")
     
-    print("\nStarting server...")
-    print("\n* Access the application at: http://localhost:8000")
-    print("* Press Ctrl+C to stop the server")
-    
-    #waitress.serve(application, host='127.0.0.1', port=8000)
-    serve(application, host='127.0.0.1', port=8000)
-    '''
-
-# Import Django settings and start server
-try:
-    from django.core.wsgi import get_wsgi_application
-    application = get_wsgi_application()
-    
-    from core.version import VERSION, VERSION_NAME
-    logger.info(f"FRC Project Management System v{VERSION} - {VERSION_NAME}")
-    print(f"FRC Project Management System v{VERSION} - {VERSION_NAME}")
-    
     # Determine port
     PORT = int(os.environ.get('PORT', 8000))
     
     # Start Waitress server
     logger.info(f"Starting server on port {PORT}")
     print(f"Starting server on port {PORT}")
-    print(f"Access the application at http://localhost:{PORT}")
+    print(f"\n* Access the application at http://localhost:{PORT}")
+    print("* Press Ctrl+C to stop the server")
     
-    from waitress import serve
-    serve(application, host='0.0.0.0', port=PORT)
+    serve(application, host='127.0.0.1', port=PORT)
     
 except Exception as e:
     logger.error(f"Error starting application: {str(e)}")
