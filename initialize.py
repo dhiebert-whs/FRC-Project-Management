@@ -51,7 +51,7 @@ def initialize_project():
         logger.error("Failed to import version information")
         VERSION = "0.5.0"
         VERSION_NAME = "Build Season Beta"
-        
+
     # Fix template structure first
     fix_template_structure(base_dir)
 
@@ -60,12 +60,45 @@ def initialize_project():
 
     # Fix static files including JavaScript
     fix_static_files(base_dir, app_dir)
+            
+    # check template files
+    check_template_files(base_dir)
     
     # Set up database if it doesn't exist
     setup_database(app_dir)
     
     logger.info("Initialization completed successfully")
     return True
+
+def check_template_files(base_dir):
+    """
+    Diagnostic function to check what template files exist and where.
+    """
+    logger.info("Checking template files...")
+    
+    # Check various template paths
+    paths_to_check = [
+        base_dir / "core" / "templates",
+        base_dir / "core" / "templates" / "core",
+        base_dir / "core" / "templates" / "registration",
+    ]
+    
+    for path in paths_to_check:
+        if path.exists():
+            logger.info(f"Directory exists: {path}")
+            for file in path.glob("*.html"):
+                logger.info(f"  - Found template: {file.name}")
+        else:
+            logger.info(f"Directory MISSING: {path}")
+
+    # Look for base.html specifically
+    base_templates = list(base_dir.glob("**/base.html"))
+    if base_templates:
+        logger.info("Found base.html templates at:")
+        for template in base_templates:
+            logger.info(f"  - {template}")
+    else:
+        logger.info("No base.html found anywhere!")
 
 def fix_template_structure(base_dir):
     """

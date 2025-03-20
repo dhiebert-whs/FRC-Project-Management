@@ -9,12 +9,12 @@ a = Analysis(
     ['run_app.py'],
     pathex=[],
     binaries=[],
-    datas=[
-        # ('core/templates', 'core/templates'),
-        (os.path.join(base_dir, 'core', 'templates'), 'core/templates'),
-        (os.path.join(base_dir, 'core', 'templates', 'registration'), 'core/templates/registration'),
-        ('static', 'static'),
-    ],
+datas=[
+    (os.path.join(base_dir, 'core', 'templates', 'base.html'), 'core/templates/core'),
+    (os.path.join(base_dir, 'core', 'templates', '*.html'), 'core/templates/core'),
+    (os.path.join(base_dir, 'core', 'templates', 'registration'), 'core/templates/registration'),
+    (os.path.join(base_dir, 'static'), 'static'),
+],
     hiddenimports=[
         'django.contrib.admin',
         'django.contrib.auth',
@@ -23,6 +23,7 @@ a = Analysis(
         'django.contrib.messages',
         'django.contrib.staticfiles',
         'django_widget_tweaks',
+        'widget_tweaks',
         'core',
         'core.version',          # Include version module
         'core.context_processors', # Include context processors
