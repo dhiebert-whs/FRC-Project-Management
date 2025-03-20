@@ -1,12 +1,50 @@
-class SubteamForm(forms.ModelForm):
-    class Meta:
-        model = Subteam
-        fields = ['name', 'color_code', 'specialties']
-        widgets = {
-            'color_code': forms.TextInput(attrs={'type': 'color'}),
-            'specialties': forms.Textarea(attrs={'rows': 3}),
-        }
-        help_texts = {
-            'color_code': 'Select a color for the subteam',
-            'specialties': 'Enter comma-separated skills or focus areas of this subteam'
-        }
+{% extends 'core/base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}{{ title }} - FRC Project Management{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                <h2>{{ title }}</h2>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.name.id_for_label }}" class="form-label">{{ form.name.label }}</label>
+                        {{ form.name.errors }}
+                        {{ form.name|add_class:"form-control" }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.color_code.id_for_label }}" class="form-label">{{ form.color_code.label }}</label>
+                        {{ form.color_code.errors }}
+                        {{ form.color_code|add_class:"form-control" }}
+                        {% if form.color_code.help_text %}
+                            <div class="form-text">{{ form.color_code.help_text }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.specialties.id_for_label }}" class="form-label">{{ form.specialties.label }}</label>
+                        {{ form.specialties.errors }}
+                        {{ form.specialties|add_class:"form-control" }}
+                        {% if form.specialties.help_text %}
+                            <div class="form-text">{{ form.specialties.help_text }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'core:subteam_list' %}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

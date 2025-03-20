@@ -16,9 +16,9 @@ import sys
 
 # Get the directory of the executable in PyInstaller
 if getattr(sys, 'frozen', False):
-    BASE_DIR = os.path.dirname(sys.executable)
+    BASE_DIR = Path(sys._MEIPASS)  # Use PyInstaller's temporary directory
 else:
-    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    BASE_DIR = Path(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 

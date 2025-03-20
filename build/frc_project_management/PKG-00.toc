@@ -38,13 +38,13 @@
    'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
    'Management\\venv\\Lib\\site-packages\\PyInstaller\\loader\\pyiboot01_bootstrap.py',
    'PYSOURCE'),
-  ('pyi_rth_inspect',
-   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
-   'Management\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_inspect.py',
-   'PYSOURCE'),
   ('pyi_rth_pkgutil',
    'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
    'Management\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_pkgutil.py',
+   'PYSOURCE'),
+  ('pyi_rth_inspect',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_inspect.py',
    'PYSOURCE'),
   ('pyi_rth_multiprocessing',
    'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
