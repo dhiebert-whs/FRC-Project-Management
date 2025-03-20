@@ -50,4 +50,7 @@ urlpatterns = [
 
     # Documentation
     path('documentation/<str:doc_name>/', views.documentation_view, name='documentation'),
+
+    # Accounts
+    
 ]
