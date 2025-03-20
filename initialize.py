@@ -52,14 +52,101 @@ def initialize_project():
         VERSION = "0.5.0"
         VERSION_NAME = "Build Season Beta"
         
+    # Fix template structure first
+    fix_template_structure(base_dir)
+
     # Fix authentication templates
     fix_auth_templates(base_dir)
+
+    # Fix static files including JavaScript
+    fix_static_files(base_dir, app_dir)
     
     # Set up database if it doesn't exist
     setup_database(app_dir)
     
     logger.info("Initialization completed successfully")
     return True
+
+def fix_template_structure(base_dir):
+    """
+    Ensure all templates are in the correct locations in the templates directory structure.
+    """
+    logger.info("Fixing template directory structure")
+    
+    # Define paths
+    template_dir = base_dir / "core" / "templates"
+    core_template_dir = template_dir / "core"
+    
+    # Ensure core template directory exists
+    os.makedirs(core_template_dir, exist_ok=True)
+    
+    # Check if base.html is in the wrong location
+    base_template = template_dir / "base.html"
+    target_base_template = core_template_dir / "base.html"
+    
+    templates_fixed = False
+    
+    if base_template.exists() and not target_base_template.exists():
+        logger.info(f"Copying base.html to correct location: {target_base_template}")
+        shutil.copy2(base_template, target_base_template)
+        templates_fixed = True
+    
+    # Check for other template files that should be in core/ directory
+    for template_file in template_dir.glob("*.html"):
+        # Skip registration directory files
+        if template_file.name != "base.html" and "registration" not in str(template_file):
+            target_file = core_template_dir / template_file.name
+            if not target_file.exists():
+                logger.info(f"Copying {template_file.name} to core/ directory")
+                shutil.copy2(template_file, target_file)
+                templates_fixed = True
+    
+    logger.info(f"Template structure fix {'applied' if templates_fixed else 'not needed'}")
+    return templates_fixed
+
+def fix_static_files(base_dir, app_dir):
+    """
+    Ensure static files, including JavaScript, are properly copied and available.
+    """
+    logger.info("Checking static files (JS, CSS)")
+    
+    # Define paths for static files
+    source_static_dir = base_dir / "static"
+    target_static_dir = app_dir / "static"
+    
+    # Create the target directory if it doesn't exist
+    os.makedirs(target_static_dir, exist_ok=True)
+    
+    # Check if js directory exists and create it if needed
+    source_js_dir = source_static_dir / "js"
+    target_js_dir = target_static_dir / "js"
+    
+    if source_js_dir.exists() and not target_js_dir.exists():
+        os.makedirs(target_js_dir, exist_ok=True)
+        
+        # Copy all JS files
+        for js_file in source_js_dir.glob("*.js"):
+            target_file = target_js_dir / js_file.name
+            if not target_file.exists():
+                logger.info(f"Copying JS file: {js_file.name}")
+                shutil.copy2(js_file, target_file)
+    
+    # Similar process for CSS files
+    source_css_dir = source_static_dir / "css"
+    target_css_dir = target_static_dir / "css"
+    
+    if source_css_dir.exists() and not target_css_dir.exists():
+        os.makedirs(target_css_dir, exist_ok=True)
+        
+        # Copy all CSS files
+        for css_file in source_css_dir.glob("*.css"):
+            target_file = target_css_dir / css_file.name
+            if not target_file.exists():
+                logger.info(f"Copying CSS file: {css_file.name}")
+                shutil.copy2(css_file, target_file)
+    
+    return True
+
 
 def fix_auth_templates(base_dir):
     """
@@ -140,7 +227,7 @@ def create_login_template(path):
                         </div>
                     {% endif %}
                     <div class="d-flex justify-content-between">
-                        <a href="{% url 'password_reset' %}" class="btn btn-link">Forgot Password?</a>
+                        <a href="{{ request.GET.next|default:'/' }}" class="btn btn-secondary">Cancel</a>
                         <button type="submit" class="btn btn-primary">Log In</button>
                     </div>
                     <input type="hidden" name="next" value="{{ next }}">
