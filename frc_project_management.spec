@@ -13,10 +13,7 @@ a = Analysis(
         # ('core/templates', 'core/templates'),
         (os.path.join(base_dir, 'core', 'templates'), 'core/templates'),
         (os.path.join(base_dir, 'core', 'templates', 'registration'), 'core/templates/registration'),
-   
         ('static', 'static'),
-        # Explicitly include authentication templates
-        # ('core/templates/registration', 'core/templates/registration'),
     ],
     hiddenimports=[
         'django.contrib.admin',
@@ -30,6 +27,10 @@ a = Analysis(
         'core.version',          # Include version module
         'core.context_processors', # Include context processors
         'initialize',            # Include initialization script
+        'django.contrib.auth.context_processors',
+        'django.contrib.messages.templatetags',
+        'django.contrib.auth.templatetags',
+        'django.contrib.staticfiles.context_processors',
     ],
     hookspath=[],
     hooksconfig={},
