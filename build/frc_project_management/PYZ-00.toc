@@ -4440,6 +4440,10 @@
    'C:\\Program '
    'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\\Lib\\opcode.py',
    'PYMODULE'),
+  ('optparse',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\\Lib\\optparse.py',
+   'PYMODULE'),
   ('pathlib',
    'C:\\Program '
    'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\\Lib\\pathlib.py',
@@ -4463,6 +4467,14 @@
   ('pprint',
    'C:\\Program '
    'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\\Lib\\pprint.py',
+   'PYMODULE'),
+  ('profile',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\\Lib\\profile.py',
+   'PYMODULE'),
+  ('pstats',
+   'C:\\Program '
+   'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\\Lib\\pstats.py',
    'PYMODULE'),
   ('psycopg2',
    'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
@@ -4991,6 +5003,62 @@
   ('uuid',
    'C:\\Program '
    'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\\Lib\\uuid.py',
+   'PYMODULE'),
+  ('waitress',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\waitress\\__init__.py',
+   'PYMODULE'),
+  ('waitress.adjustments',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\waitress\\adjustments.py',
+   'PYMODULE'),
+  ('waitress.buffers',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\waitress\\buffers.py',
+   'PYMODULE'),
+  ('waitress.channel',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\waitress\\channel.py',
+   'PYMODULE'),
+  ('waitress.compat',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\waitress\\compat.py',
+   'PYMODULE'),
+  ('waitress.parser',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\waitress\\parser.py',
+   'PYMODULE'),
+  ('waitress.proxy_headers',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\waitress\\proxy_headers.py',
+   'PYMODULE'),
+  ('waitress.receiver',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\waitress\\receiver.py',
+   'PYMODULE'),
+  ('waitress.rfc7230',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\waitress\\rfc7230.py',
+   'PYMODULE'),
+  ('waitress.server',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\waitress\\server.py',
+   'PYMODULE'),
+  ('waitress.task',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\waitress\\task.py',
+   'PYMODULE'),
+  ('waitress.trigger',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\waitress\\trigger.py',
+   'PYMODULE'),
+  ('waitress.utilities',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\waitress\\utilities.py',
+   'PYMODULE'),
+  ('waitress.wasyncore',
+   'C:\\Users\\dhiebert\\Local Repositories\\FRC Project '
+   'Management\\venv\\Lib\\site-packages\\waitress\\wasyncore.py',
    'PYMODULE'),
   ('webbrowser',
    'C:\\Program '
